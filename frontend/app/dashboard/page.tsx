@@ -17,7 +17,7 @@ export default function DashboardPage() {
       <PageContainer
         description="This page establishes the first authenticated-style SaaS experience before Firebase, real data, or business features are introduced."
         eyebrow="Dashboard"
-        title="Welcome to AI Job Search Copilot"
+        title="Welcome to Career Copilot"
       >
         <div className={styles.statusRow}>
           <Badge tone="success">Milestone 2A</Badge>

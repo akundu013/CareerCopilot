@@ -34,7 +34,7 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <Badge tone="success">SaaS job search workspace</Badge>
-          <h1>AI Job Search Copilot</h1>
+          <h1>Career Copilot</h1>
           <p>
             A recruiter-quality portfolio app for tracking applications,
             improving resumes, preparing for interviews, and understanding job

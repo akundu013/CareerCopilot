@@ -285,7 +285,7 @@ Settings
 Display:
 
 ```txt
-Welcome to AI Job Search Copilot
+Welcome to Career Copilot
 ```
 
 ### Success Criteria

@@ -6,7 +6,7 @@ export function Header() {
     <header className={styles.header}>
       <Link className={styles.brand} href="/">
         <span className={styles.brandMark}>AI</span>
-        <span>AI Job Search Copilot</span>
+        <span>Career Copilot</span>
       </Link>
 
       <nav className={styles.nav} aria-label="Primary navigation">

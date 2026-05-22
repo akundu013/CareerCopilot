@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "../styles/globals.scss";
 
 export const metadata: Metadata = {
-  title: "AI Job Search Copilot",
+  title: "Career Copilot",
   description:
     "A SaaS-style job search workspace for tracking applications, improving resumes, and preparing for interviews.",
 };

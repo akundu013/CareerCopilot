@@ -8,7 +8,7 @@
 
 ## Objective
 
-Establish the foundational project structure and development environment for the AI Job Search Copilot application.
+Establish the foundational project structure and development environment for the Career Copilot application.
 
 The goal of this milestone is to ensure that:
 
@@ -22,7 +22,7 @@ The goal of this milestone is to ensure that:
 
 ## Business Context
 
-AI Job Search Copilot is a recruiter-focused SaaS application designed to demonstrate proficiency in:
+Career Copilot is a recruiter-focused SaaS application designed to demonstrate proficiency in:
 
 - React
 - Next.js
@@ -44,7 +44,7 @@ This milestone creates the technical baseline required for all future developmen
 ### Repository Structure
 
 ```txt
-AI-JOB-SEARCH/
+CARRER-COPILOT/
 │
 ├── frontend/
 ├── backend/

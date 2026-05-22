@@ -1,4 +1,4 @@
-# AI Job Search Copilot
+# Career Copilot
 
 A recruiter-focused full-stack SaaS application that helps job seekers manage applications, analyze resume-job fit, and prepare for interviews.
 
@@ -147,14 +147,13 @@ Backend is responsible for:
 ## Project Structure
 
 ```text
-AI-JOB-SEARCH/
+CARRER-COPILOT/
 │
 ├── frontend/
 ├── backend/
 ├── docs/
 │
 ├── README.md
-├── AGENTS.md
 ├── ARCHITECTURE.md
 ├── ROADMAP.md
 └── .gitignore

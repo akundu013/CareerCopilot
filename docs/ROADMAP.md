@@ -1,6 +1,6 @@
 # Project Milestones
 
-## Project: AI Job Search Copilot
+## Project: Career Copilot
 
 A full-stack SaaS-style portfolio project built with Next.js, React, TypeScript, SCSS Modules, FastAPI, and Firebase.
 

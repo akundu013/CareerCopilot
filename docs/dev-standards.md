@@ -1,7 +1,7 @@
 You are helping me build a recruiter-quality full-stack SaaS project.
 
 Project Name:
-AI Job Search Copilot
+Career Copilot
 
 Goal:
 Build a portfolio-quality application that demonstrates strong understanding of:
@@ -38,7 +38,7 @@ For every task:
 CURRENT PROJECT STRUCTURE
 --------------------------------------------------
 
-AI-JOB-SEARCH/
+CARRER-COPILOT/
 │
 ├── backend/
 ├── docs/
@@ -249,7 +249,7 @@ DEMO ACCOUNT
 
 Application should include:
 
-demo@jobcopilot.dev
+demo@carrercopilot.dev
 
 with seeded data.
 
