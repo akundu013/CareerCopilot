@@ -1,3 +1,4 @@
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Badge } from "@/components/ui/Badge";
@@ -13,34 +14,38 @@ const metrics = [
 
 export default function DashboardPage() {
   return (
-    <AppShell>
-      <PageContainer
-        description="This page establishes the first authenticated-style SaaS experience before Firebase, real data, or business features are introduced."
-        eyebrow="Dashboard"
-        title="Welcome to Career Copilot"
-      >
-        <div className={styles.statusRow}>
-          <Badge tone="success">Milestone 2A</Badge>
-          <Badge tone="neutral">Frontend shell</Badge>
-        </div>
+    <ProtectedRoute>
+      <AppShell>
+        <PageContainer
+          description="This page establishes the first authenticated-style SaaS experience before Firebase, real data, or business features are introduced."
+          eyebrow="Dashboard"
+          title="Welcome to Career Copilot"
+        >
+          <div className={styles.statusRow}>
+            <Badge tone="success">Milestone 2A</Badge>
+            <Badge tone="neutral">Frontend shell</Badge>
+          </div>
 
-        <div className={styles.summaryGrid}>
-          {metrics.map((metric) => (
-            <Card key={metric.label}>
-              <div className={styles.metric}>
-                <span className={styles.metricLabel}>{metric.label}</span>
-                <strong className={styles.metricValue}>{metric.value}</strong>
-                <p>{metric.helper}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
+          <div className={styles.summaryGrid}>
+            {metrics.map((metric) => (
+              <Card key={metric.label}>
+                <div className={styles.metric}>
+                  <span className={styles.metricLabel}>{metric.label}</span>
+                  <strong className={styles.metricValue}>
+                    {metric.value}
+                  </strong>
+                  <p>{metric.helper}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
 
-        <EmptyState
-          description="Firebase, authentication, and real job search data will be added in future milestones."
-          title="No workspace data yet"
-        />
-      </PageContainer>
-    </AppShell>
+          <EmptyState
+            description="Firebase, authentication, and real job search data will be added in future milestones."
+            title="No workspace data yet"
+          />
+        </PageContainer>
+      </AppShell>
+    </ProtectedRoute>
   );
 }
