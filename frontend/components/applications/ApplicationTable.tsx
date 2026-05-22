@@ -6,10 +6,14 @@ import {
   type ApplicationStatusFilter,
 } from "@/components/applications/ApplicationFilters";
 import { ApplicationRow } from "@/components/applications/ApplicationRow";
+import { DeleteApplicationDialog } from "@/components/applications/DeleteApplicationDialog";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Spinner } from "@/components/ui/Spinner";
-import { getApplications } from "@/services/application-api";
+import {
+  deleteApplication,
+  getApplications,
+} from "@/services/application-api";
 import type { JobApplication } from "@/types/application";
 import styles from "./ApplicationTable.module.scss";
 
@@ -23,6 +27,12 @@ export function ApplicationTable() {
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [activeFilter, setActiveFilter] =
     useState<ApplicationStatusFilter>("all");
+  const [applicationToDelete, setApplicationToDelete] =
+    useState<JobApplication | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deletingApplicationId, setDeletingApplicationId] = useState<
+    string | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,6 +83,46 @@ export function ApplicationTable() {
     );
   }, [activeFilter, sortedApplications]);
 
+  function handleRequestDelete(application: JobApplication) {
+    setApplicationToDelete(application);
+    setDeleteError(null);
+  }
+
+  function handleCancelDelete() {
+    if (deletingApplicationId) {
+      return;
+    }
+
+    setApplicationToDelete(null);
+    setDeleteError(null);
+  }
+
+  async function handleConfirmDelete() {
+    if (!applicationToDelete) {
+      return;
+    }
+
+    try {
+      setDeleteError(null);
+      setDeletingApplicationId(applicationToDelete.id);
+      await deleteApplication(applicationToDelete.id);
+      setApplications((currentApplications) =>
+        currentApplications.filter(
+          (application) => application.id !== applicationToDelete.id,
+        ),
+      );
+      setApplicationToDelete(null);
+    } catch (deleteFailure) {
+      setDeleteError(
+        deleteFailure instanceof Error
+          ? deleteFailure.message
+          : "Unable to delete application. Please try again.",
+      );
+    } finally {
+      setDeletingApplicationId(null);
+    }
+  }
+
   if (isLoading) {
     return (
       <section className={styles.statePanel} aria-live="polite">
@@ -95,55 +145,69 @@ export function ApplicationTable() {
   }
 
   return (
-    <section className={styles.tableSection}>
-      <div className={styles.toolbar}>
-        <ApplicationFilters
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-        />
-        <Button href="/dashboard/applications/new">Add application</Button>
-      </div>
-
-      {applications.length === 0 ? (
-        <div className={styles.emptyWrap}>
-          <EmptyState
-            description="Create your first tracked application to start building a clear job-search pipeline."
-            title="No applications yet"
+    <>
+      <section className={styles.tableSection}>
+        <div className={styles.toolbar}>
+          <ApplicationFilters
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
           />
           <Button href="/dashboard/applications/new">Add application</Button>
         </div>
-      ) : filteredApplications.length === 0 ? (
-        <div className={styles.emptyWrap}>
-          <EmptyState
-            description="Try a different status filter or add another application."
-            title="No applications match this filter"
-          />
-        </div>
-      ) : (
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th scope="col">Company</th>
-                <th scope="col">Role</th>
-                <th scope="col">Status</th>
-                <th scope="col">Location</th>
-                <th scope="col">Applied</th>
-                <th scope="col">Updated</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredApplications.map((application) => (
-                <ApplicationRow
-                  application={application}
-                  key={application.id}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </section>
+
+        {applications.length === 0 ? (
+          <div className={styles.emptyWrap}>
+            <EmptyState
+              description="Create your first tracked application to start building a clear job-search pipeline."
+              title="No applications yet"
+            />
+            <Button href="/dashboard/applications/new">Add application</Button>
+          </div>
+        ) : filteredApplications.length === 0 ? (
+          <div className={styles.emptyWrap}>
+            <EmptyState
+              description="Try a different status filter or add another application."
+              title="No applications match this filter"
+            />
+          </div>
+        ) : (
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th scope="col">Company</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Location</th>
+                  <th scope="col">Applied</th>
+                  <th scope="col">Updated</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredApplications.map((application) => (
+                  <ApplicationRow
+                    application={application}
+                    isDeleting={deletingApplicationId === application.id}
+                    key={application.id}
+                    onRequestDelete={handleRequestDelete}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {applicationToDelete ? (
+        <DeleteApplicationDialog
+          application={applicationToDelete}
+          error={deleteError}
+          isDeleting={deletingApplicationId === applicationToDelete.id}
+          onCancel={handleCancelDelete}
+          onConfirm={() => void handleConfirmDelete()}
+        />
+      ) : null}
+    </>
   );
 }

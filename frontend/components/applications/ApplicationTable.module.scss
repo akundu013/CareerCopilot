@@ -114,6 +114,12 @@
   text-decoration: underline;
 }
 
+.actionGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
 .actionLink {
   display: inline-flex;
   min-height: 32px;
@@ -135,6 +141,48 @@
 .actionLink:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--color-focus) 24%, transparent);
   outline-offset: 2px;
+}
+
+.deleteButton,
+.dangerButton {
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 52%, transparent);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.deleteButton:hover,
+.dangerButton:hover {
+  background: var(--color-accent-soft);
+}
+
+.deleteButton:focus-visible,
+.dangerButton:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-accent) 24%, transparent);
+  outline-offset: 2px;
+}
+
+.deleteButton:disabled,
+.dangerButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.dangerButton {
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+.dangerButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-accent) 84%, black);
 }
 
 .statusBadge {
@@ -197,6 +245,72 @@
   line-height: 1.6;
 }
 
+.dialogOverlay {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: rgb(26 29 26 / 42%);
+}
+
+.dialog {
+  display: grid;
+  width: min(100%, 460px);
+  gap: var(--space-5);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.dialogContent {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.dialogEyebrow {
+  color: var(--color-accent);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dialog h2 {
+  color: var(--color-text-primary);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.dialog p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.dialog strong {
+  color: var(--color-text-primary);
+}
+
+.dialogError {
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 42%, transparent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dialogActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
 @media (max-width: 760px) {
   .toolbar {
     align-items: stretch;
@@ -250,5 +364,9 @@
 
   .row:hover {
     background: transparent;
+  }
+
+  .dialogActions > * {
+    flex: 1 1 180px;
   }
 }

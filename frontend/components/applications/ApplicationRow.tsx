@@ -5,6 +5,8 @@ import styles from "./ApplicationTable.module.scss";
 
 interface ApplicationRowProps {
   application: JobApplication;
+  isDeleting: boolean;
+  onRequestDelete: (application: JobApplication) => void;
 }
 
 function formatDate(value?: string): string {
@@ -25,7 +27,11 @@ function formatDate(value?: string): string {
   }).format(date);
 }
 
-export function ApplicationRow({ application }: ApplicationRowProps) {
+export function ApplicationRow({
+  application,
+  isDeleting,
+  onRequestDelete,
+}: ApplicationRowProps) {
   return (
     <tr className={styles.row}>
       <td data-label="Company">
@@ -50,14 +56,24 @@ export function ApplicationRow({ application }: ApplicationRowProps) {
       <td data-label="Applied">{formatDate(application.dateApplied)}</td>
       <td data-label="Updated">{formatDate(application.updatedAt)}</td>
       <td data-label="Actions">
-        <Link
-          className={styles.actionLink}
-          href={`/dashboard/applications/${encodeURIComponent(
-            application.id,
-          )}/edit`}
-        >
-          Edit
-        </Link>
+        <div className={styles.actionGroup}>
+          <Link
+            className={styles.actionLink}
+            href={`/dashboard/applications/${encodeURIComponent(
+              application.id,
+            )}/edit`}
+          >
+            Edit
+          </Link>
+          <button
+            className={styles.deleteButton}
+            disabled={isDeleting}
+            onClick={() => onRequestDelete(application)}
+            type="button"
+          >
+            Delete
+          </button>
+        </div>
       </td>
     </tr>
   );
