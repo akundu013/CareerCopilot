@@ -1,0 +1,22 @@
+.card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.content {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+}

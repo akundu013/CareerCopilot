@@ -1,0 +1,44 @@
+.container {
+  display: grid;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.eyebrow {
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1.12;
+}
+
+.description {
+  max-width: 720px;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .container {
+    gap: var(--space-6);
+  }
+
+  .title {
+    font-size: 28px;
+  }
+}
