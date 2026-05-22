@@ -130,6 +130,7 @@ export function ApplicationTable() {
                 <th scope="col">Location</th>
                 <th scope="col">Applied</th>
                 <th scope="col">Updated</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>

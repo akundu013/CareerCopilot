@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { JobApplication } from "@/types/application";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./ApplicationTable.module.scss";
@@ -48,6 +49,16 @@ export function ApplicationRow({ application }: ApplicationRowProps) {
       <td data-label="Location">{application.location || "Not set"}</td>
       <td data-label="Applied">{formatDate(application.dateApplied)}</td>
       <td data-label="Updated">{formatDate(application.updatedAt)}</td>
+      <td data-label="Actions">
+        <Link
+          className={styles.actionLink}
+          href={`/dashboard/applications/${encodeURIComponent(
+            application.id,
+          )}/edit`}
+        >
+          Edit
+        </Link>
+      </td>
     </tr>
   );
 }

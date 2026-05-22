@@ -9,6 +9,7 @@ import {
   APPLICATION_STATUSES,
   type ApplicationStatus,
   type CreateApplicationInput,
+  type JobApplication,
 } from "@/types/application";
 import styles from "./ApplicationForm.module.scss";
 
@@ -42,15 +43,50 @@ const initialFormState: ApplicationFormState = {
   notes: "",
 };
 
+interface ApplicationFormProps {
+  cancelHref?: string;
+  initialApplication?: JobApplication;
+  onSubmit?: (input: CreateApplicationInput) => Promise<void>;
+  submitLabel?: string;
+  submittingLabel?: string;
+}
+
+function getInitialFormState(
+  application?: JobApplication,
+): ApplicationFormState {
+  if (!application) {
+    return initialFormState;
+  }
+
+  return {
+    company: application.company,
+    role: application.role,
+    status: application.status,
+    location: application.location ?? "",
+    jobUrl: application.jobUrl ?? "",
+    salaryRange: application.salaryRange ?? "",
+    dateApplied: application.dateApplied ?? "",
+    notes: application.notes ?? "",
+  };
+}
+
 function optionalValue(value: string): string | undefined {
   const trimmedValue = value.trim();
 
   return trimmedValue ? trimmedValue : undefined;
 }
 
-export function ApplicationForm() {
+export function ApplicationForm({
+  cancelHref = "/dashboard",
+  initialApplication,
+  onSubmit,
+  submitLabel = "Save application",
+  submittingLabel = "Saving...",
+}: ApplicationFormProps) {
   const router = useRouter();
-  const [form, setForm] = useState<ApplicationFormState>(initialFormState);
+  const [form, setForm] = useState<ApplicationFormState>(() =>
+    getInitialFormState(initialApplication),
+  );
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -103,13 +139,13 @@ export function ApplicationForm() {
 
     try {
       setIsSubmitting(true);
-      await createApplication(payload);
+      await (onSubmit ? onSubmit(payload) : createApplication(payload));
       router.push("/dashboard/applications");
     } catch (submitError) {
       setError(
         submitError instanceof Error
           ? submitError.message
-          : "Unable to create application. Please try again.",
+          : "Unable to save application. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -199,11 +235,11 @@ export function ApplicationForm() {
       ) : null}
 
       <div className={styles.actions}>
-        <Button href="/dashboard" variant="secondary">
+        <Button href={cancelHref} variant="secondary">
           Cancel
         </Button>
         <Button disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Saving..." : "Save application"}
+          {isSubmitting ? submittingLabel : submitLabel}
         </Button>
       </div>
     </form>
