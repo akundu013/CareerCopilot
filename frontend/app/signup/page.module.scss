@@ -1,0 +1,188 @@
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 0.86fr);
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgb(184 87 50 / 12%), transparent 42%),
+    var(--color-background);
+}
+
+.brandPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-12);
+}
+
+.brand {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-primary);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.brandMark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 14px;
+}
+
+.brandCopy {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 720px;
+}
+
+.eyebrow {
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.brandCopy h1 {
+  color: var(--color-text-primary);
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.brandCopy p {
+  max-width: 620px;
+  color: var(--color-text-secondary);
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.valueList {
+  display: grid;
+  max-width: 560px;
+  gap: var(--space-3);
+}
+
+.valueList span {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 72%);
+  color: var(--color-text-primary);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.formPanel {
+  display: grid;
+  align-items: center;
+  padding: var(--space-8);
+  background: rgb(255 255 255 / 54%);
+}
+
+.card {
+  display: grid;
+  width: 100%;
+  max-width: 460px;
+  gap: var(--space-8);
+  margin: 0 auto;
+  padding: var(--space-10);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.cardHeader {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cardHeader span {
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cardHeader h2 {
+  color: var(--color-text-primary);
+  font-size: 30px;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.cardHeader p,
+.footerText {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.error {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.footerText {
+  text-align: center;
+}
+
+.footerText a {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.footerText a:focus-visible,
+.brand:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-focus) 28%, transparent);
+  outline-offset: 4px;
+}
+
+@media (max-width: 900px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .brandPanel {
+    padding: var(--space-8);
+  }
+
+  .formPanel {
+    padding: 0 var(--space-8) var(--space-8);
+  }
+}
+
+@media (max-width: 640px) {
+  .brandPanel,
+  .formPanel {
+    padding: var(--space-4);
+  }
+
+  .brandCopy h1 {
+    font-size: 40px;
+  }
+
+  .card {
+    padding: var(--space-6);
+  }
+}
