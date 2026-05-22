@@ -32,7 +32,7 @@ async function getAuthorizationHeader() {
   return `Bearer ${token}`;
 }
 
-async function apiRequest<TResponse>(
+export async function apiRequest<TResponse>(
   path: string,
   options: ApiRequestOptions = {},
 ): Promise<TResponse> {
@@ -50,6 +50,10 @@ async function apiRequest<TResponse>(
 
   if (!response.ok) {
     throw new Error(`API request failed with status ${response.status}.`);
+  }
+
+  if (response.status === 204) {
+    return undefined as TResponse;
   }
 
   return response.json() as Promise<TResponse>;
