@@ -39,9 +39,39 @@
   font-weight: 600;
 }
 
-.nav a:focus-visible {
+.logoutButton {
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.logoutButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.nav a:focus-visible,
+.logoutButton:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--color-focus) 28%, transparent);
   outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .logoutButton:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
 }
 
 @media (max-width: 640px) {
@@ -49,5 +79,9 @@
     align-items: flex-start;
     flex-direction: column;
     padding: var(--space-4);
+  }
+
+  .nav {
+    flex-wrap: wrap;
   }
 }
