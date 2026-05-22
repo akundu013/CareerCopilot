@@ -1,0 +1,231 @@
+.tableSection {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filterButton {
+  min-height: 38px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.filterButton:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-focus) 24%, transparent);
+  outline-offset: 2px;
+}
+
+.activeFilter,
+.filterButton:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.table th {
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.table td {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.row {
+  transition: background 160ms ease;
+}
+
+.row:hover {
+  background: color-mix(in srgb, var(--color-primary-soft) 36%, transparent);
+}
+
+.primaryCell {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.primaryCell strong {
+  color: var(--color-text-primary);
+  font-size: 15px;
+}
+
+.primaryCell a {
+  width: fit-content;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primaryCell a:hover {
+  text-decoration: underline;
+}
+
+.statusBadge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.applied {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.interviewing {
+  background: #e4edff;
+  color: #2857a3;
+}
+
+.offer {
+  background: #dcf7df;
+  color: #1f6c36;
+}
+
+.rejected {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.withdrawn {
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+}
+
+.statePanel,
+.emptyWrap {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.statePanel h2 {
+  color: var(--color-text-primary);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.statePanel p {
+  max-width: 520px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .toolbar > * {
+    width: 100%;
+  }
+
+  .tableWrap {
+    overflow-x: visible;
+  }
+
+  .table {
+    min-width: 0;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .table td::before {
+    color: var(--color-text-secondary);
+    content: attr(data-label);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .row {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .row:last-child {
+    border-bottom: 0;
+  }
+
+  .row:hover {
+    background: transparent;
+  }
+}
