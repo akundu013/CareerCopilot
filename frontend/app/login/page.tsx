@@ -52,6 +52,35 @@ export default function LoginPage() {
     }
   }
 
+  async function handleDemoLogin() {
+    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL;
+    const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
+
+    setError("");
+
+    if (!demoEmail || !demoPassword) {
+      setError(
+        "Demo login is not configured. Add demo credentials to your environment variables.",
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await login(demoEmail, demoPassword);
+      router.push("/dashboard");
+    } catch (demoLoginError) {
+      setError(
+        demoLoginError instanceof Error
+          ? demoLoginError.message
+          : "Unable to log in with the demo account. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <main className={styles.page}>
       <section className={styles.brandPanel} aria-labelledby="login-heading">
@@ -119,6 +148,19 @@ export default function LoginPage() {
               {isSubmitting ? "Signing in..." : "Sign in"}
             </Button>
           </form>
+
+          <div className={styles.divider}>
+            <span>or</span>
+          </div>
+
+          <button
+            className={styles.demoButton}
+            disabled={isSubmitting}
+            onClick={handleDemoLogin}
+            type="button"
+          >
+            {isSubmitting ? "Preparing demo..." : "Continue with Demo Account"}
+          </button>
 
           <p className={styles.footerText}>
             New to Career Copilot? <Link href="/signup">Create an account</Link>
