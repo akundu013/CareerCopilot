@@ -20,7 +20,7 @@ def _get_required_env(name: str) -> str:
 
 
 def _normalize_private_key(private_key: str) -> str:
-    return private_key.replace("\\n", "\n")
+    return private_key.strip().replace("\\n", "\n")
 
 
 def initialize_firebase_admin() -> App:

@@ -1,4 +1,6 @@
-from typing import Any
+from collections.abc import Callable
+import logging
+from typing import Any, TypeVar
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
@@ -12,6 +14,8 @@ from app.services.application_repository import ApplicationRepository
 
 router = APIRouter(prefix="/api/applications", tags=["applications"])
 application_repository = ApplicationRepository()
+RepositoryResult = TypeVar("RepositoryResult")
+logger = logging.getLogger(__name__)
 
 
 def _get_user_id(user: dict[str, Any]) -> str:
@@ -33,6 +37,19 @@ def _not_found() -> HTTPException:
     )
 
 
+def _run_repository_operation(
+    operation: Callable[[], RepositoryResult],
+) -> RepositoryResult:
+    try:
+        return operation()
+    except Exception as exc:
+        logger.exception("Application repository operation failed.")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Application storage is unavailable.",
+        ) from exc
+
+
 @router.post(
     "",
     response_model=ApplicationResponse,
@@ -43,9 +60,11 @@ def create_application(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> ApplicationResponse:
     user_id = _get_user_id(current_user)
-    application = application_repository.create(
-        user_id,
-        payload.model_dump(mode="json", exclude_none=True),
+    application = _run_repository_operation(
+        lambda: application_repository.create(
+            user_id,
+            payload.model_dump(mode="json", exclude_none=True),
+        ),
     )
 
     return ApplicationResponse(**application)
@@ -56,7 +75,9 @@ def list_applications(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> list[ApplicationResponse]:
     user_id = _get_user_id(current_user)
-    applications = application_repository.list(user_id)
+    applications = _run_repository_operation(
+        lambda: application_repository.list(user_id),
+    )
 
     return [ApplicationResponse(**application) for application in applications]
 
@@ -67,7 +88,9 @@ def get_application(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> ApplicationResponse:
     user_id = _get_user_id(current_user)
-    application = application_repository.get(user_id, application_id)
+    application = _run_repository_operation(
+        lambda: application_repository.get(user_id, application_id),
+    )
 
     if application is None:
         raise _not_found()
@@ -90,7 +113,13 @@ def update_application(
         )
 
     user_id = _get_user_id(current_user)
-    application = application_repository.update(user_id, application_id, update_data)
+    application = _run_repository_operation(
+        lambda: application_repository.update(
+            user_id,
+            application_id,
+            update_data,
+        ),
+    )
 
     if application is None:
         raise _not_found()
@@ -104,7 +133,9 @@ def delete_application(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> Response:
     user_id = _get_user_id(current_user)
-    deleted = application_repository.delete(user_id, application_id)
+    deleted = _run_repository_operation(
+        lambda: application_repository.delete(user_id, application_id),
+    )
 
     if not deleted:
         raise _not_found()

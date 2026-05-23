@@ -114,16 +114,16 @@ Build the first real product feature.
 
 ### Tasks
 
-- [ ] Design application data model
-- [ ] Create Firestore collection structure
-- [ ] Create application TypeScript types
-- [ ] Create FastAPI application schemas
-- [ ] Create application CRUD endpoints
-- [ ] Create application form
-- [ ] Create application list/table
-- [ ] Add status filters
-- [ ] Add edit functionality
-- [ ] Add delete functionality
+- [x] Design application data model
+- [x] Create Firestore collection structure
+- [x] Create application TypeScript types
+- [x] Create FastAPI application schemas
+- [x] Create application CRUD endpoints
+- [x] Create application form
+- [x] Create application list/table
+- [x] Add status filters
+- [x] Add edit functionality
+- [x] Add delete functionality
 
 ### Success Criteria
 
@@ -336,5 +336,6 @@ Make the project recruiter-ready.
 ## Current Status
 
 ```text
-Current Milestone: Milestone 2 — Frontend App Shell
+Current Milestone: Milestone 5 — Application Tracker complete
+Next Milestone: Milestone 6 — Resume Management
 ```

@@ -36,9 +36,10 @@ This project is being built to showcase:
 ### Application Tracker
 
 - Create applications
-- Update application status
-- Track deadlines
-- Store interview notes
+- View and filter applications by status
+- Edit application details and status
+- Delete applications with confirmation
+- Store user-owned application data in Firestore
 
 ### Resume Management
 
