@@ -1,9 +1,19 @@
+"use client";
+
+import { useState } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { ResumeList } from "@/components/resumes/ResumeList";
 import { ResumeUploader } from "@/components/resumes/ResumeUploader";
 
 export default function ResumesPage() {
+  const [resumeRefreshKey, setResumeRefreshKey] = useState(0);
+
+  function refreshResumes() {
+    setResumeRefreshKey((currentKey) => currentKey + 1);
+  }
+
   return (
     <ProtectedRoute>
       <AppShell>
@@ -12,7 +22,8 @@ export default function ResumesPage() {
           eyebrow="Resumes"
           title="Resume library"
         >
-          <ResumeUploader />
+          <ResumeUploader onUploadComplete={refreshResumes} />
+          <ResumeList refreshKey={resumeRefreshKey} />
         </PageContainer>
       </AppShell>
     </ProtectedRoute>
