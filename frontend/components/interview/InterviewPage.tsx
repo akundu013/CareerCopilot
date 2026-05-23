@@ -210,9 +210,14 @@ export function InterviewPage() {
             <span className={styles.eyebrow}>Practice setup</span>
             <h2 id="interview-form-title">Select an analysis</h2>
           </div>
-          <Button href="/dashboard/analysis/history" variant="secondary">
-            Analysis history
-          </Button>
+          <div className={styles.headerActions}>
+            <Button href="/dashboard/analysis/history" variant="secondary">
+              Analysis history
+            </Button>
+            <Button href="/dashboard/interview/history" variant="secondary">
+              Interview history
+            </Button>
+          </div>
         </div>
 
         <label className={styles.field} htmlFor="analysisId">

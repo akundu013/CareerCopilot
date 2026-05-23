@@ -11,6 +11,7 @@ const navigationItems = [
   { label: "Analysis", href: "/dashboard/analysis" },
   { label: "Analysis History", href: "/dashboard/analysis/history" },
   { label: "Interview Prep", href: "/dashboard/interview" },
+  { label: "Interview History", href: "/dashboard/interview/history" },
   { label: "Analytics", href: "/dashboard" },
   { label: "Settings", href: "/dashboard" },
 ];

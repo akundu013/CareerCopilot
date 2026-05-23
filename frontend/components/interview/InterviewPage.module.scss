@@ -22,6 +22,13 @@
   gap: var(--space-4);
 }
 
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
 .eyebrow {
   display: block;
   margin-bottom: var(--space-1);
@@ -132,11 +139,16 @@
     flex-direction: column;
   }
 
+  .headerActions {
+    justify-content: stretch;
+  }
+
   .actions {
     justify-content: stretch;
   }
 
   .actions > *,
+  .headerActions > *,
   .header > a,
   .header > button {
     flex: 1 1 auto;
