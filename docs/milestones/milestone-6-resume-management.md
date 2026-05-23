@@ -656,6 +656,138 @@ git commit -m "chore(resumes): finalize resume management milestone"
 
 ---
 
+# Phase 6.12.1 — Resume Deletion Patch
+
+## Goal
+
+Complete the resume lifecycle by allowing users to permanently delete uploaded resumes.
+
+This patch addresses an omission in Milestone 6 where a backend delete endpoint exists but no dedicated UI workflow was defined.
+
+---
+
+## Requirements
+
+Users must be able to delete a resume from the Resume List page.
+
+Deletion must remove:
+
+- Resume metadata from Firestore
+- Resume file from Firebase Storage
+
+---
+
+## Backend Requirements
+
+Endpoint already exists:
+
+```txt
+DELETE /api/resumes/{resume_id}
+```
+
+Behavior:
+
+```txt
+Load resume metadata
+↓
+Read storagePath
+↓
+Delete Firebase Storage file
+↓
+Delete Firestore document
+↓
+Return success response
+```
+
+Failure handling:
+
+- Missing file should not crash deletion
+- Firestore deletion must still complete if file was already removed
+- Return appropriate error responses
+
+---
+
+## Frontend Requirements
+
+Add:
+
+```txt
+DeleteResumeButton
+```
+
+Location:
+
+```txt
+ResumeCard
+```
+
+Workflow:
+
+```txt
+User clicks Delete
+↓
+Confirmation dialog
+↓
+DELETE /api/resumes/{resume_id}
+↓
+Refresh resume list
+↓
+Success message
+```
+
+---
+
+## UI Requirements
+
+Resume Card should support:
+
+- Parse Resume
+- Delete Resume
+
+Delete button should:
+
+- Require confirmation
+- Show loading state
+- Disable while request is in progress
+- Display error state if deletion fails
+
+---
+
+## Acceptance Criteria
+
+- User can delete a resume from UI
+- Resume disappears from list after deletion
+- Firestore metadata is removed
+- Firebase Storage file is removed
+- Page refresh does not restore deleted resume
+- No console errors
+- No orphaned files remain in Storage
+
+---
+
+## UI Verification
+
+Verify:
+
+- Upload resume
+- Confirm file exists in Storage
+- Confirm metadata exists in Firestore
+- Delete resume
+- Confirm file removed from Storage
+- Confirm metadata removed from Firestore
+- Refresh page
+- Resume remains deleted
+
+---
+
+## Commit Message
+
+```bash
+git commit -m "feat_patch(resumes): add resume deletion workflow"
+```
+
+---
+
 # Final Success Criteria
 
 Milestone 6 is complete when:

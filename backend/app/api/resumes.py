@@ -17,6 +17,7 @@ from app.services.resume_parser import (
     parse_resume_file,
 )
 from app.services.resume_repository import ResumeRepository
+from app.services.firebase_storage_service import delete_resume_file
 
 router = APIRouter(prefix="/api/resumes", tags=["resumes"])
 resume_repository = ResumeRepository()
@@ -53,6 +54,17 @@ def _run_repository_operation(
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Resume storage is unavailable.",
+        ) from exc
+
+
+def _run_storage_operation(operation: Callable[[], None]) -> None:
+    try:
+        operation()
+    except Exception as exc:
+        logger.exception("Resume file storage operation failed.")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Resume file storage is unavailable.",
         ) from exc
 
 
@@ -188,11 +200,18 @@ def delete_resume(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> Response:
     user_id = _get_user_id(current_user)
-    deleted = _run_repository_operation(
-        lambda: resume_repository.delete(user_id, resume_id),
+    resume = _run_repository_operation(
+        lambda: resume_repository.get(user_id, resume_id),
     )
 
-    if not deleted:
+    if resume is None:
         raise _not_found()
+
+    _run_storage_operation(
+        lambda: delete_resume_file(user_id, resume["storagePath"]),
+    )
+    _run_repository_operation(
+        lambda: resume_repository.delete(user_id, resume_id),
+    )
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

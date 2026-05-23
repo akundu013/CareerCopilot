@@ -143,19 +143,21 @@ Allow users to upload and manage resumes.
 
 ### Tasks
 
-- [ ] Add Firebase Storage setup
-- [ ] Create resume upload UI
-- [ ] Store resume metadata
-- [ ] Create resume list page
-- [ ] Add backend resume parsing service
-- [ ] Extract text from uploaded resumes
-- [ ] Store parsed resume text
+- [x] Add Firebase Storage setup
+- [x] Create resume upload UI
+- [x] Store resume metadata
+- [x] Create resume list page
+- [x] Add backend resume parsing service
+- [x] Extract text from uploaded resumes
+- [x] Store parsed resume text
+- [x] Add resume deletion workflow
 
 ### Success Criteria
 
 - User can upload a resume
 - Resume file is stored
 - Resume metadata is saved
+- User can delete a resume
 - Backend can parse resume text
 
 ---
@@ -336,6 +338,6 @@ Make the project recruiter-ready.
 ## Current Status
 
 ```text
-Current Milestone: Milestone 5 — Application Tracker complete
-Next Milestone: Milestone 6 — Resume Management
+Current Milestone: Milestone 6 — Resume Management complete
+Next Milestone: Milestone 7 — Job Match Analysis
 ```

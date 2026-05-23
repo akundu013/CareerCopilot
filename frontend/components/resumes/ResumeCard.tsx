@@ -1,10 +1,15 @@
 import { Button } from "@/components/ui/Button";
 import type { ResumeDocument } from "@/types/resume";
+import { DeleteResumeButton } from "./DeleteResumeButton";
 import { ResumeStatusBadge } from "./ResumeStatusBadge";
 import styles from "./ResumeList.module.scss";
 
 interface ResumeCardProps {
+  isDeleteDisabled?: boolean;
+  isDeleting?: boolean;
+  isParseDisabled?: boolean;
   isParsing?: boolean;
+  onDelete: () => void;
   onParse: () => void;
   resume: ResumeDocument;
 }
@@ -44,7 +49,11 @@ function getParseStatusText(resume: ResumeDocument): string {
 }
 
 export function ResumeCard({
+  isDeleteDisabled = false,
+  isDeleting = false,
+  isParseDisabled = false,
   isParsing = false,
+  onDelete,
   onParse,
   resume,
 }: ResumeCardProps) {
@@ -90,7 +99,7 @@ export function ResumeCard({
         </a>
         <Button
           className={styles.parseButton}
-          disabled={isParsing}
+          disabled={isParsing || isParseDisabled || isDeleting}
           onClick={onParse}
           variant={isParsed ? "secondary" : "primary"}
         >
@@ -100,6 +109,11 @@ export function ResumeCard({
               ? "Parse again"
               : "Parse resume"}
         </Button>
+        <DeleteResumeButton
+          disabled={isDeleteDisabled || isParsing}
+          isDeleting={isDeleting}
+          onDelete={onDelete}
+        />
       </div>
     </article>
   );

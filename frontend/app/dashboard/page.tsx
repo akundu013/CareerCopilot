@@ -7,9 +7,21 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import styles from "./page.module.scss";
 
 const metrics = [
-  { helper: "Application tracker arrives later", label: "Applications", value: "0" },
-  { helper: "Resume storage arrives later", label: "Resumes", value: "0" },
-  { helper: "Interview prep arrives later", label: "Interviews", value: "0" },
+  {
+    helper: "Manage tracked roles in the application workspace",
+    label: "Applications",
+    value: "0",
+  },
+  {
+    helper: "Upload, list, and parse resumes from the resume library",
+    label: "Resumes",
+    value: "0",
+  },
+  {
+    helper: "Interview prep arrives in a later milestone",
+    label: "Interviews",
+    value: "0",
+  },
 ];
 
 export default function DashboardPage() {
@@ -17,13 +29,13 @@ export default function DashboardPage() {
     <ProtectedRoute>
       <AppShell>
         <PageContainer
-          description="This page establishes the first authenticated-style SaaS experience before Firebase, real data, or business features are introduced."
+          description="A focused workspace for tracking applications, managing resumes, and preparing future job-search intelligence."
           eyebrow="Dashboard"
           title="Welcome to Career Copilot"
         >
           <div className={styles.statusRow}>
-            <Badge tone="success">Milestone 2A</Badge>
-            <Badge tone="neutral">Frontend shell</Badge>
+            <Badge tone="success">Milestone 6</Badge>
+            <Badge tone="neutral">Resume management</Badge>
           </div>
 
           <div className={styles.summaryGrid}>
@@ -41,8 +53,8 @@ export default function DashboardPage() {
           </div>
 
           <EmptyState
-            description="Firebase, authentication, and real job search data will be added in future milestones."
-            title="No workspace data yet"
+            description="Use the sidebar to manage applications and resumes. Match analysis and interview preparation arrive in future milestones."
+            title="Workspace ready"
           />
         </PageContainer>
       </AppShell>
