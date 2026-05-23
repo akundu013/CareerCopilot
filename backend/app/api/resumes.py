@@ -8,7 +8,13 @@ from app.dependencies import get_current_user
 from app.schemas.resume import (
     CreateResumeRequest,
     ResumeResponse,
+    ResumeStatus,
     UpdateResumeRequest,
+)
+from app.services.resume_parser import (
+    ResumeParseError,
+    download_resume_file,
+    parse_resume_file,
 )
 from app.services.resume_repository import ResumeRepository
 
@@ -96,6 +102,59 @@ def get_resume(
         raise _not_found()
 
     return ResumeResponse(**resume)
+
+
+def _update_parse_result(
+    user_id: str,
+    resume_id: str,
+    status_value: str,
+    parsed_text: str | None = None,
+) -> ResumeResponse:
+    resume = _run_repository_operation(
+        lambda: resume_repository.update_parse_result(
+            user_id,
+            resume_id,
+            status_value,
+            parsed_text,
+        ),
+    )
+
+    if resume is None:
+        raise _not_found()
+
+    return ResumeResponse(**resume)
+
+
+@router.post("/{resume_id}/parse", response_model=ResumeResponse)
+def parse_resume(
+    resume_id: str,
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> ResumeResponse:
+    user_id = _get_user_id(current_user)
+    resume = _run_repository_operation(
+        lambda: resume_repository.get(user_id, resume_id),
+    )
+
+    if resume is None:
+        raise _not_found()
+
+    try:
+        file_bytes = download_resume_file(resume["fileUrl"])
+        parsed_text = parse_resume_file(file_bytes, resume["contentType"])
+    except ResumeParseError:
+        logger.exception("Resume parsing failed.")
+        return _update_parse_result(
+            user_id,
+            resume_id,
+            ResumeStatus.PARSE_FAILED.value,
+        )
+
+    return _update_parse_result(
+        user_id,
+        resume_id,
+        ResumeStatus.PARSED.value,
+        parsed_text,
+    )
 
 
 @router.patch("/{resume_id}", response_model=ResumeResponse)

@@ -73,6 +73,22 @@ class ResumeRepository:
 
         return self.get(user_id, resume_id)
 
+    def update_parse_result(
+        self,
+        user_id: str,
+        resume_id: str,
+        status: str,
+        parsed_text: str | None = None,
+    ) -> dict[str, Any] | None:
+        return self.update(
+            user_id,
+            resume_id,
+            {
+                "status": status,
+                "parsedText": parsed_text,
+            },
+        )
+
     def delete(self, user_id: str, resume_id: str) -> bool:
         document = self.get_document(user_id, resume_id)
 

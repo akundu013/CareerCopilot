@@ -1,9 +1,14 @@
 from io import BytesIO
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from docx import Document
 from pypdf import PdfReader
 
 
+FIREBASE_STORAGE_HOST = "firebasestorage.googleapis.com"
+MAX_RESUME_DOWNLOAD_SIZE_BYTES = 5 * 1024 * 1024
 PDF_CONTENT_TYPES = {"application/pdf"}
 DOCX_CONTENT_TYPES = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -17,6 +22,10 @@ class ResumeParseError(Exception):
 
 class UnsupportedResumeContentTypeError(ResumeParseError):
     """Raised when the uploaded resume content type is not supported."""
+
+
+class ResumeFileDownloadError(ResumeParseError):
+    """Raised when an uploaded resume file cannot be downloaded."""
 
 
 def _normalize_content_type(content_type: str) -> str:
@@ -56,6 +65,60 @@ def parse_resume_file(file_bytes: bytes, content_type: str) -> str:
     raise UnsupportedResumeContentTypeError(
         f"Unsupported resume content type: {content_type}.",
     )
+
+
+def download_resume_file(file_url: str) -> bytes:
+    parsed_url = urlparse(file_url)
+
+    if (
+        parsed_url.scheme != "https"
+        or parsed_url.hostname != FIREBASE_STORAGE_HOST
+    ):
+        raise ResumeFileDownloadError("Resume file URL is not supported.")
+
+    request = Request(
+        file_url,
+        headers={"User-Agent": "CareerCopilotResumeParser/1.0"},
+    )
+
+    try:
+        with urlopen(request, timeout=15) as response:
+            content_length = response.headers.get("Content-Length")
+            content_size = int(content_length) if content_length else None
+
+            if (
+                content_size is not None
+                and content_size > MAX_RESUME_DOWNLOAD_SIZE_BYTES
+            ):
+                raise ResumeFileDownloadError(
+                    "Resume file is larger than the supported size.",
+                )
+
+            file_bytes = response.read(MAX_RESUME_DOWNLOAD_SIZE_BYTES + 1)
+    except ValueError as exc:
+        raise ResumeFileDownloadError(
+            "Resume file download returned invalid metadata.",
+        ) from exc
+    except HTTPError as exc:
+        raise ResumeFileDownloadError(
+            "Firebase Storage rejected the resume file download.",
+        ) from exc
+    except URLError as exc:
+        raise ResumeFileDownloadError(
+            "Unable to reach Firebase Storage for resume download.",
+        ) from exc
+    except TimeoutError as exc:
+        raise ResumeFileDownloadError("Resume file download timed out.") from exc
+
+    if len(file_bytes) > MAX_RESUME_DOWNLOAD_SIZE_BYTES:
+        raise ResumeFileDownloadError(
+            "Resume file is larger than the supported size.",
+        )
+
+    if not file_bytes:
+        raise ResumeFileDownloadError("Resume file download returned no data.")
+
+    return file_bytes
 
 
 def parse_pdf(file_bytes: bytes) -> str:
