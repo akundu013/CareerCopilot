@@ -4,10 +4,12 @@ export interface Analysis {
   id: string;
   userId: string;
   resumeId: string;
+  resumeFileName: string;
   jobDescription: string;
+  extractedRequirements: string[];
   matchScore: MatchScore;
-  matchedSkills: string[];
-  missingSkills: string[];
+  matchedRequirements: string[];
+  missingRequirements: string[];
   improvementSuggestions: string[];
   createdAt: string;
   updatedAt: string;
@@ -21,9 +23,10 @@ export interface CreateAnalysisInput {
 export interface AnalysisSummary {
   id: string;
   resumeId: string;
+  resumeFileName: string;
   matchScore: MatchScore;
-  matchedSkills: string[];
-  missingSkills: string[];
+  matchedRequirements: string[];
+  missingRequirements: string[];
   createdAt: string;
   updatedAt: string;
 }

@@ -8,6 +8,7 @@ const navigationItems = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Applications", href: "/dashboard/applications" },
   { label: "Resumes", href: "/dashboard/resumes" },
+  { label: "Analysis", href: "/dashboard/analysis" },
   { label: "Interview Prep", href: "/dashboard" },
   { label: "Analytics", href: "/dashboard" },
   { label: "Settings", href: "/dashboard" },
