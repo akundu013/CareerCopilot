@@ -102,12 +102,7 @@ def create_analysis(
             detail="Selected resume does not have parsed text.",
         )
 
-    print("RESUME ID:", payload.resumeId)
-    print("PARSED TEXT:", parsed_text[:500])
-    print("JOB DESCRIPTION:", job_description)
-
     extracted_requirements = extract_requirements(job_description)
-    print("EXTRACTED REQUIREMENTS:", extracted_requirements)
 
     if not extracted_requirements:
         raise HTTPException(
@@ -116,7 +111,6 @@ def create_analysis(
         )
 
     match_result = analyze_match(parsed_text, extracted_requirements)
-    print("MATCH RESULT:", match_result)
     improvement_suggestions = generate_suggestions(
         match_result["missingRequirements"],
         match_result["matchedRequirements"],
