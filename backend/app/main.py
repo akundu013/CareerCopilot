@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.applications import router as applications_router
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
+from app.api.resumes import router as resumes_router
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 
@@ -49,3 +50,4 @@ app.add_middleware(
 app.include_router(applications_router)
 app.include_router(auth_router)
 app.include_router(health_router)
+app.include_router(resumes_router)

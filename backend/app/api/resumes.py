@@ -1,0 +1,139 @@
+from collections.abc import Callable
+import logging
+from typing import Any, TypeVar
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+
+from app.dependencies import get_current_user
+from app.schemas.resume import (
+    CreateResumeRequest,
+    ResumeResponse,
+    UpdateResumeRequest,
+)
+from app.services.resume_repository import ResumeRepository
+
+router = APIRouter(prefix="/api/resumes", tags=["resumes"])
+resume_repository = ResumeRepository()
+RepositoryResult = TypeVar("RepositoryResult")
+logger = logging.getLogger(__name__)
+
+
+def _get_user_id(user: dict[str, Any]) -> str:
+    user_id = user.get("uid")
+
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authenticated user is missing a user id.",
+        )
+
+    return user_id
+
+
+def _not_found() -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Resume not found.",
+    )
+
+
+def _run_repository_operation(
+    operation: Callable[[], RepositoryResult],
+) -> RepositoryResult:
+    try:
+        return operation()
+    except Exception as exc:
+        logger.exception("Resume repository operation failed.")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Resume storage is unavailable.",
+        ) from exc
+
+
+@router.post(
+    "",
+    response_model=ResumeResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_resume(
+    payload: CreateResumeRequest,
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> ResumeResponse:
+    user_id = _get_user_id(current_user)
+    resume = _run_repository_operation(
+        lambda: resume_repository.create(
+            user_id,
+            payload.model_dump(mode="json", exclude_none=True),
+        ),
+    )
+
+    return ResumeResponse(**resume)
+
+
+@router.get("", response_model=list[ResumeResponse])
+def list_resumes(
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> list[ResumeResponse]:
+    user_id = _get_user_id(current_user)
+    resumes = _run_repository_operation(
+        lambda: resume_repository.list(user_id),
+    )
+
+    return [ResumeResponse(**resume) for resume in resumes]
+
+
+@router.get("/{resume_id}", response_model=ResumeResponse)
+def get_resume(
+    resume_id: str,
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> ResumeResponse:
+    user_id = _get_user_id(current_user)
+    resume = _run_repository_operation(
+        lambda: resume_repository.get(user_id, resume_id),
+    )
+
+    if resume is None:
+        raise _not_found()
+
+    return ResumeResponse(**resume)
+
+
+@router.patch("/{resume_id}", response_model=ResumeResponse)
+def update_resume(
+    resume_id: str,
+    payload: UpdateResumeRequest,
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> ResumeResponse:
+    update_data = payload.model_dump(mode="json", exclude_unset=True)
+
+    if not update_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="At least one resume field must be provided.",
+        )
+
+    user_id = _get_user_id(current_user)
+    resume = _run_repository_operation(
+        lambda: resume_repository.update(user_id, resume_id, update_data),
+    )
+
+    if resume is None:
+        raise _not_found()
+
+    return ResumeResponse(**resume)
+
+
+@router.delete("/{resume_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_resume(
+    resume_id: str,
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> Response:
+    user_id = _get_user_id(current_user)
+    deleted = _run_repository_operation(
+        lambda: resume_repository.delete(user_id, resume_id),
+    )
+
+    if not deleted:
+        raise _not_found()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

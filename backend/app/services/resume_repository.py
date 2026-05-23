@@ -72,3 +72,13 @@ class ResumeRepository:
         document.update({**data, "updatedAt": _utc_now()})
 
         return self.get(user_id, resume_id)
+
+    def delete(self, user_id: str, resume_id: str) -> bool:
+        document = self.get_document(user_id, resume_id)
+
+        if not document.get().exists:
+            return False
+
+        document.delete()
+
+        return True
