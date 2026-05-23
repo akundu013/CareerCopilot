@@ -9,6 +9,7 @@ const navigationItems = [
   { label: "Applications", href: "/dashboard/applications" },
   { label: "Resumes", href: "/dashboard/resumes" },
   { label: "Analysis", href: "/dashboard/analysis" },
+  { label: "Analysis History", href: "/dashboard/analysis/history" },
   { label: "Interview Prep", href: "/dashboard" },
   { label: "Analytics", href: "/dashboard" },
   { label: "Settings", href: "/dashboard" },
@@ -16,6 +17,10 @@ const navigationItems = [
 
 function isActiveRoute(pathname: string, href: string): boolean {
   if (href === "/dashboard") {
+    return pathname === href;
+  }
+
+  if (href === "/dashboard/analysis") {
     return pathname === href;
   }
 

@@ -6,6 +6,7 @@ import { createAnalysis } from "@/services/analysis-api";
 import { getResumes } from "@/services/resume-api";
 import type { Analysis } from "@/types/analysis";
 import type { ResumeDocument } from "@/types/resume";
+import { AnalysisResult } from "./AnalysisResult";
 import { JobDescriptionInput } from "./JobDescriptionInput";
 import { ResumeSelector } from "./ResumeSelector";
 import styles from "./AnalysisForm.module.scss";
@@ -129,45 +130,46 @@ export function AnalysisForm() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <div className={styles.header}>
-        <h2>Generate a match analysis</h2>
-        <p>
-          Select a parsed resume and paste a job description to create a saved
-          analysis.
-        </p>
-      </div>
+    <div className={styles.stack}>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div className={styles.header}>
+          <h2>Generate a match analysis</h2>
+          <p>
+            Select a parsed resume and paste a job description to create a
+            saved analysis.
+          </p>
+        </div>
 
-      <ResumeSelector
-        disabled={isSubmitting}
-        onChange={setSelectedResumeId}
-        resumes={parsedResumes}
-        value={selectedResumeId}
-      />
+        <ResumeSelector
+          disabled={isSubmitting}
+          onChange={setSelectedResumeId}
+          resumes={parsedResumes}
+          value={selectedResumeId}
+        />
 
-      <JobDescriptionInput
-        disabled={isSubmitting}
-        onChange={setJobDescription}
-        value={jobDescription}
-      />
+        <JobDescriptionInput
+          disabled={isSubmitting}
+          onChange={setJobDescription}
+          value={jobDescription}
+        />
 
-      {error ? (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      ) : null}
+        {error ? (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        ) : null}
 
-      {createdAnalysis ? (
-        <p className={styles.success} role="status">
-          Analysis generated for {createdAnalysis.resumeFileName}.
-        </p>
-      ) : null}
+        <div className={styles.actions}>
+          <Button href="/dashboard/analysis/history" variant="secondary">
+            View history
+          </Button>
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting ? "Generating..." : "Generate analysis"}
+          </Button>
+        </div>
+      </form>
 
-      <div className={styles.actions}>
-        <Button disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Generating..." : "Generate analysis"}
-        </Button>
-      </div>
-    </form>
+      {createdAnalysis ? <AnalysisResult analysis={createdAnalysis} /> : null}
+    </div>
   );
 }

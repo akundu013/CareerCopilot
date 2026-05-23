@@ -1,0 +1,80 @@
+.result {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 920px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.header h2 {
+  color: var(--color-text-primary);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.requirementSummary {
+  display: grid;
+  align-content: center;
+  gap: var(--space-2);
+  min-height: 150px;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.requirementSummary span {
+  color: var(--color-text-primary);
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.requirementSummary p {
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.listGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+@media (max-width: 820px) {
+  .summaryGrid,
+  .listGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

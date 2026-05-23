@@ -1,0 +1,39 @@
+.listPanel {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.listPanel h3 {
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.list li {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.empty {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}

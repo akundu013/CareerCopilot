@@ -49,7 +49,7 @@ export async function apiRequest<TResponse>(
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}.`);
+    throw new Error(await getApiErrorMessage(response));
   }
 
   if (response.status === 204) {
@@ -61,4 +61,18 @@ export async function apiRequest<TResponse>(
 
 export function getCurrentUserFromApi() {
   return apiRequest<ApiUser>("/api/auth/me");
+}
+
+async function getApiErrorMessage(response: Response): Promise<string> {
+  try {
+    const errorBody = (await response.json()) as { detail?: unknown };
+
+    if (typeof errorBody.detail === "string") {
+      return errorBody.detail;
+    }
+  } catch {
+    // Fall back to a status-based message when the backend has no JSON detail.
+  }
+
+  return `API request failed with status ${response.status}.`;
 }
