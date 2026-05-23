@@ -5,7 +5,7 @@ import { ResumeCard } from "@/components/resumes/ResumeCard";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Spinner } from "@/components/ui/Spinner";
-import { getResumes } from "@/services/resume-api";
+import { getResumes, parseResume } from "@/services/resume-api";
 import type { ResumeDocument } from "@/types/resume";
 import styles from "./ResumeList.module.scss";
 
@@ -23,6 +23,8 @@ export function ResumeList({ refreshKey = 0 }: ResumeListProps) {
   const [resumes, setResumes] = useState<ResumeDocument[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [parseError, setParseError] = useState<string | null>(null);
+  const [parsingResumeId, setParsingResumeId] = useState<string | null>(null);
 
   const loadResumes = useCallback(async (showLoading = true) => {
     try {
@@ -59,6 +61,35 @@ export function ResumeList({ refreshKey = 0 }: ResumeListProps) {
       ),
     [resumes],
   );
+
+  async function handleParseResume(resume: ResumeDocument) {
+    if (parsingResumeId) {
+      return;
+    }
+
+    try {
+      setParseError(null);
+      setParsingResumeId(resume.id);
+
+      const parsedResume = await parseResume(resume.id);
+
+      setResumes((currentResumes) =>
+        currentResumes.map((currentResume) =>
+          currentResume.id === parsedResume.id ? parsedResume : currentResume,
+        ),
+      );
+
+      await loadResumes(false);
+    } catch (parseFailure) {
+      setParseError(
+        parseFailure instanceof Error
+          ? parseFailure.message
+          : "Unable to parse resume. Please try again.",
+      );
+    } finally {
+      setParsingResumeId(null);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -102,11 +133,24 @@ export function ResumeList({ refreshKey = 0 }: ResumeListProps) {
           />
         </div>
       ) : (
-        <div className={styles.cardGrid}>
-          {sortedResumes.map((resume) => (
-            <ResumeCard key={resume.id} resume={resume} />
-          ))}
-        </div>
+        <>
+          {parseError ? (
+            <p className={styles.parseError} role="alert">
+              {parseError}
+            </p>
+          ) : null}
+
+          <div className={styles.cardGrid}>
+            {sortedResumes.map((resume) => (
+              <ResumeCard
+                isParsing={parsingResumeId === resume.id}
+                key={resume.id}
+                onParse={() => void handleParseResume(resume)}
+                resume={resume}
+              />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );

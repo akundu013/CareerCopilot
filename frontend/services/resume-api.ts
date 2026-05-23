@@ -56,3 +56,9 @@ export function deleteResume(id: string): Promise<void> {
     method: "DELETE",
   });
 }
+
+export function parseResume(id: string): Promise<ResumeDocument> {
+  return apiRequest<ResumeDocument>(`${resumePath(id)}/parse`, {
+    method: "POST",
+  });
+}

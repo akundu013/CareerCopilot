@@ -140,6 +140,12 @@
   overflow-wrap: anywhere;
 }
 
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 .fileLink {
   display: inline-flex;
   width: fit-content;
@@ -158,9 +164,24 @@
     color 160ms ease;
 }
 
+.parseButton {
+  min-height: 38px;
+}
+
 .fileLink:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--color-focus) 24%, transparent);
   outline-offset: 2px;
+}
+
+.parseError {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 42%, transparent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .statePanel,
@@ -217,7 +238,12 @@
     grid-template-columns: 1fr;
   }
 
-  .fileLink {
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .fileLink,
+  .parseButton {
     width: 100%;
     justify-content: center;
   }

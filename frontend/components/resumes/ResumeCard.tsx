@@ -1,8 +1,11 @@
+import { Button } from "@/components/ui/Button";
 import type { ResumeDocument } from "@/types/resume";
 import { ResumeStatusBadge } from "./ResumeStatusBadge";
 import styles from "./ResumeList.module.scss";
 
 interface ResumeCardProps {
+  isParsing?: boolean;
+  onParse: () => void;
   resume: ResumeDocument;
 }
 
@@ -34,13 +37,19 @@ function getParseStatusText(resume: ResumeDocument): string {
   }
 
   if (resume.status === "parse_failed") {
-    return "Parsing failed. Try again once parsing actions are available.";
+    return "Parsing failed. You can try parsing again.";
   }
 
   return "Waiting for parsing.";
 }
 
-export function ResumeCard({ resume }: ResumeCardProps) {
+export function ResumeCard({
+  isParsing = false,
+  onParse,
+  resume,
+}: ResumeCardProps) {
+  const isParsed = resume.status === "parsed";
+
   return (
     <article className={styles.card}>
       <div className={styles.cardHeader}>
@@ -70,14 +79,28 @@ export function ResumeCard({ resume }: ResumeCardProps) {
         </div>
       </dl>
 
-      <a
-        className={styles.fileLink}
-        href={resume.fileUrl}
-        rel="noreferrer"
-        target="_blank"
-      >
-        Open file
-      </a>
+      <div className={styles.cardActions}>
+        <a
+          className={styles.fileLink}
+          href={resume.fileUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Open file
+        </a>
+        <Button
+          className={styles.parseButton}
+          disabled={isParsing}
+          onClick={onParse}
+          variant={isParsed ? "secondary" : "primary"}
+        >
+          {isParsing
+            ? "Parsing..."
+            : isParsed
+              ? "Parse again"
+              : "Parse resume"}
+        </Button>
+      </div>
     </article>
   );
 }
