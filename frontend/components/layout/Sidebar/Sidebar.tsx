@@ -12,7 +12,7 @@ const navigationItems = [
   { label: "Analysis History", href: "/dashboard/analysis/history" },
   { label: "Interview Prep", href: "/dashboard/interview" },
   { label: "Interview History", href: "/dashboard/interview/history" },
-  { label: "Analytics", href: "/dashboard" },
+  { label: "Analytics", href: "/dashboard/analytics" },
   { label: "Settings", href: "/dashboard" },
 ];
 
@@ -26,6 +26,10 @@ function isActiveRoute(pathname: string, href: string): boolean {
   }
 
   if (href === "/dashboard/interview") {
+    return pathname === href;
+  }
+
+  if (href === "/dashboard/analytics") {
     return pathname === href;
   }
 
