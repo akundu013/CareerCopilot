@@ -1,0 +1,10 @@
+import os
+
+DEMO_USER_EMAIL_ENV = "DEMO_USER_EMAIL"
+DEFAULT_DEMO_USER_EMAIL = "demo@careercopilot.dev"
+DEMO_CUSTOM_RESUME_LIMIT = 2
+DEMO_ANALYSES_PER_CUSTOM_RESUME_LIMIT = 5
+
+
+def get_demo_user_email() -> str:
+    return os.getenv(DEMO_USER_EMAIL_ENV, DEFAULT_DEMO_USER_EMAIL).strip().lower()

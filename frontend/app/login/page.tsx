@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
+import { DemoLoginButton } from "@/components/auth/DemoLoginButton";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,35 +47,6 @@ export default function LoginPage() {
         loginError instanceof Error
           ? loginError.message
           : "Unable to log in. Please try again.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  async function handleDemoLogin() {
-    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL;
-    const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
-
-    setError("");
-
-    if (!demoEmail || !demoPassword) {
-      setError(
-        "Demo login is not configured. Add demo credentials to your environment variables.",
-      );
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      await login(demoEmail, demoPassword);
-      router.push("/dashboard");
-    } catch (demoLoginError) {
-      setError(
-        demoLoginError instanceof Error
-          ? demoLoginError.message
-          : "Unable to log in with the demo account. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -153,14 +125,11 @@ export default function LoginPage() {
             <span>or</span>
           </div>
 
-          <button
-            className={styles.demoButton}
+          <DemoLoginButton
             disabled={isSubmitting}
-            onClick={handleDemoLogin}
-            type="button"
-          >
-            {isSubmitting ? "Preparing demo..." : "Continue with Demo Account"}
-          </button>
+            onError={setError}
+            onLoadingChange={setIsSubmitting}
+          />
 
           <p className={styles.footerText}>
             New to Career Copilot? <Link href="/signup">Create an account</Link>
