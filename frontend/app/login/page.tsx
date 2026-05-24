@@ -82,56 +82,70 @@ export default function LoginPage() {
       <section className={styles.formPanel} aria-label="Login form">
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span>Sign in</span>
-            <h2>Access Career Copilot</h2>
-            <p>Use your email and password to continue to the dashboard.</p>
+            <span>{signupEnabled ? "Sign in" : "Demo"}</span>
+            <h2>{signupEnabled ? "Access Career Copilot" : "Explore Career Copilot"}</h2>
+            <p>
+              {signupEnabled
+                ? "Use your email and password to continue to the dashboard."
+                : "Demo mode is enabled. Continue with the demo account to explore the product."}
+            </p>
           </div>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <Input
-              autoComplete="email"
-              disabled={isSubmitting}
-              id="email"
-              label="Email"
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="you@example.com"
-              required
-              type="email"
-              value={email}
-            />
+          {signupEnabled ? (
+            <>
+              <form className={styles.form} onSubmit={handleSubmit}>
+                <Input
+                  autoComplete="email"
+                  disabled={isSubmitting}
+                  id="email"
+                  label="Email"
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  type="email"
+                  value={email}
+                />
 
-            <Input
-              autoComplete="current-password"
-              disabled={isSubmitting}
-              id="password"
-              label="Password"
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Enter your password"
-              required
-              type="password"
-              value={password}
-            />
+                <Input
+                  autoComplete="current-password"
+                  disabled={isSubmitting}
+                  id="password"
+                  label="Password"
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Enter your password"
+                  required
+                  type="password"
+                  value={password}
+                />
 
-            {error ? (
-              <p className={styles.error} role="alert">
-                {error}
-              </p>
-            ) : null}
+                {error ? (
+                  <p className={styles.error} role="alert">
+                    {error}
+                  </p>
+                ) : null}
 
-            <Button disabled={isSubmitting} type="submit">
-              {isSubmitting ? "Signing in..." : "Sign in"}
-            </Button>
-          </form>
+                <Button disabled={isSubmitting} type="submit">
+                  {isSubmitting ? "Signing in..." : "Sign in"}
+                </Button>
+              </form>
 
-          <div className={styles.divider}>
-            <span>or</span>
-          </div>
+              <div className={styles.divider}>
+                <span>or</span>
+              </div>
+            </>
+          ) : null}
 
           <DemoLoginButton
             disabled={isSubmitting}
             onError={setError}
             onLoadingChange={setIsSubmitting}
           />
+
+          {!signupEnabled && error ? (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          ) : null}
 
           {signupEnabled ? (
             <p className={styles.footerText}>
