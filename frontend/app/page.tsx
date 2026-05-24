@@ -36,13 +36,16 @@ export default function Home() {
           <Badge tone="success">SaaS job search workspace</Badge>
           <h1>Career Copilot</h1>
           <p>
-            A recruiter-quality portfolio app for tracking applications,
+            Tracking applications,
             improving resumes, preparing for interviews, and understanding job
             search momentum.
           </p>
           <div className={styles.actions}>
-            <Button href="/dashboard">View dashboard</Button>
-            <Button href="#features" variant="secondary">
+            <Button href="/login">Sign in</Button>
+            <Button href="/signup" variant="secondary">
+              Create account
+            </Button>
+            <Button href="#features" variant="ghost">
               Explore features
             </Button>
           </div>

@@ -5,9 +5,7 @@
   gap: var(--space-16);
   min-height: 100vh;
   padding: var(--space-8);
-  background:
-    linear-gradient(135deg, rgb(47 111 78 / 10%), transparent 38%),
-    var(--color-background);
+  background: var(--gradient-landing), var(--color-background);
   font-family: var(--font-sans);
 }
 

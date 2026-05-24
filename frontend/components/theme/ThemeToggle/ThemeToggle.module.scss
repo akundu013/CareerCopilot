@@ -1,0 +1,79 @@
+.toggle {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 60;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 58px;
+  height: 34px;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-glass);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  isolation: isolate;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.toggle:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.toggle:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-focus) 28%, transparent);
+  outline-offset: 2px;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  color: var(--color-text-secondary);
+  transition: color 180ms ease;
+}
+
+.icon svg {
+  width: 14px;
+  height: 14px;
+  fill: currentcolor;
+}
+
+.thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-primary) 30%, var(--color-surface));
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 200ms ease,
+    background 180ms ease;
+}
+
+.light .icon:first-of-type,
+.dark .icon:last-of-type {
+  color: var(--color-text-primary);
+}
+
+.dark .thumb {
+  transform: translateX(24px);
+  background: color-mix(in srgb, var(--color-primary) 64%, var(--color-surface));
+}
+
+@media (max-width: 640px) {
+  .toggle {
+    right: var(--space-3);
+    bottom: var(--space-3);
+  }
+}

@@ -1,21 +1,32 @@
-:root {
-  --color-background: #f7f8f5;
+:root,
+:root[data-theme="light"] {
+  --color-scheme: light;
+  --color-background: #f6f8f5;
   --color-foreground: #1a1d1a;
   --color-surface: #ffffff;
-  --color-surface-muted: #eef2ea;
-  --color-surface-strong: #243025;
+  --color-surface-muted: #edf2eb;
+  --color-surface-strong: #213127;
   --color-primary: #2f6f4e;
   --color-primary-hover: #275e42;
   --color-primary-soft: #dceee2;
   --color-accent: #b85732;
   --color-accent-soft: #f7e4db;
-  --color-button-primary-hover: #275e42;
-  --color-button-secondary-hover: #eef2ea;
   --color-text-primary: #1a1d1a;
   --color-text-secondary: #5e665e;
   --color-text-inverse: #ffffff;
-  --color-border: #dce2d8;
+  --color-border: #dbe2d8;
+  --color-border-strong: #bac7bb;
   --color-focus: #2f6f4e;
+  --color-overlay: rgb(20 25 22 / 46%);
+  --color-surface-glass: rgb(255 255 255 / 74%);
+  --color-surface-panel: rgb(255 255 255 / 58%);
+  --color-status-info-bg: #e4edff;
+  --color-status-info-text: #2857a3;
+  --color-status-success-bg: #dcf7df;
+  --color-status-success-text: #1f6c36;
+  --gradient-landing: linear-gradient(135deg, rgb(47 111 78 / 10%), transparent 38%);
+  --gradient-login: linear-gradient(135deg, rgb(47 111 78 / 12%), transparent 42%);
+  --gradient-signup: linear-gradient(135deg, rgb(184 87 50 / 12%), transparent 42%);
   --color-shadow: rgb(26 29 26 / 10%);
 
   --font-sans: Arial, Helvetica, sans-serif;
@@ -37,4 +48,77 @@
 
   --shadow-sm: 0 1px 2px var(--color-shadow);
   --shadow-md: 0 12px 36px rgb(26 29 26 / 12%);
+  --shadow-lg: 0 14px 36px rgb(24 39 32 / 8%);
+}
+
+:root[data-theme="dark"] {
+  --color-scheme: dark;
+  --color-background: #101513;
+  --color-foreground: #e4ece7;
+  --color-surface: #151d19;
+  --color-surface-muted: #1d2823;
+  --color-surface-strong: #e4ece7;
+  --color-primary: #58b585;
+  --color-primary-hover: #4aa676;
+  --color-primary-soft: #20382c;
+  --color-accent: #f39b79;
+  --color-accent-soft: #3b271f;
+  --color-text-primary: #e4ece7;
+  --color-text-secondary: #a6b4ac;
+  --color-text-inverse: #09100d;
+  --color-border: #26362f;
+  --color-border-strong: #355247;
+  --color-focus: #79c9a1;
+  --color-overlay: rgb(2 4 3 / 66%);
+  --color-surface-glass: rgb(21 29 25 / 82%);
+  --color-surface-panel: rgb(17 24 21 / 72%);
+  --color-status-info-bg: #1d2f4a;
+  --color-status-info-text: #89b4ff;
+  --color-status-success-bg: #203a2a;
+  --color-status-success-text: #7dd39d;
+  --gradient-landing: linear-gradient(135deg, rgb(88 181 133 / 22%), transparent 42%);
+  --gradient-login: linear-gradient(135deg, rgb(88 181 133 / 24%), transparent 44%);
+  --gradient-signup: linear-gradient(135deg, rgb(243 155 121 / 20%), transparent 44%);
+  --color-shadow: rgb(0 0 0 / 42%);
+
+  --shadow-sm: 0 2px 8px rgb(0 0 0 / 24%);
+  --shadow-md: 0 18px 42px rgb(0 0 0 / 38%);
+  --shadow-lg: 0 20px 48px rgb(0 0 0 / 32%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-scheme: dark;
+    --color-background: #101513;
+    --color-foreground: #e4ece7;
+    --color-surface: #151d19;
+    --color-surface-muted: #1d2823;
+    --color-surface-strong: #e4ece7;
+    --color-primary: #58b585;
+    --color-primary-hover: #4aa676;
+    --color-primary-soft: #20382c;
+    --color-accent: #f39b79;
+    --color-accent-soft: #3b271f;
+    --color-text-primary: #e4ece7;
+    --color-text-secondary: #a6b4ac;
+    --color-text-inverse: #09100d;
+    --color-border: #26362f;
+    --color-border-strong: #355247;
+    --color-focus: #79c9a1;
+    --color-overlay: rgb(2 4 3 / 66%);
+    --color-surface-glass: rgb(21 29 25 / 82%);
+    --color-surface-panel: rgb(17 24 21 / 72%);
+    --color-status-info-bg: #1d2f4a;
+    --color-status-info-text: #89b4ff;
+    --color-status-success-bg: #203a2a;
+    --color-status-success-text: #7dd39d;
+    --gradient-landing: linear-gradient(135deg, rgb(88 181 133 / 22%), transparent 42%);
+    --gradient-login: linear-gradient(135deg, rgb(88 181 133 / 24%), transparent 44%);
+    --gradient-signup: linear-gradient(135deg, rgb(243 155 121 / 20%), transparent 44%);
+    --color-shadow: rgb(0 0 0 / 42%);
+
+    --shadow-sm: 0 2px 8px rgb(0 0 0 / 24%);
+    --shadow-md: 0 18px 42px rgb(0 0 0 / 38%);
+    --shadow-lg: 0 20px 48px rgb(0 0 0 / 32%);
+  }
 }

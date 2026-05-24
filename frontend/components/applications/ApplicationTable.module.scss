@@ -214,13 +214,13 @@
 }
 
 .interviewing {
-  background: #e4edff;
-  color: #2857a3;
+  background: var(--color-status-info-bg);
+  color: var(--color-status-info-text);
 }
 
 .offer {
-  background: #dcf7df;
-  color: #1f6c36;
+  background: var(--color-status-success-bg);
+  color: var(--color-status-success-text);
 }
 
 .rejected {
@@ -265,7 +265,7 @@
   display: grid;
   place-items: center;
   padding: var(--space-5);
-  background: rgb(26 29 26 / 42%);
+  background: var(--color-overlay);
 }
 
 .dialog {
