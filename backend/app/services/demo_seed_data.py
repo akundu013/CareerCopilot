@@ -356,7 +356,14 @@ def _get_demo_analyses(user_id: str, now: str) -> list[dict[str, Any]]:
     ]
 
     return [
-        _with_seed_metadata({**analysis, "userId": user_id}, now)
+        _with_seed_metadata(
+            {
+                **analysis,
+                "userId": user_id,
+                "aiFeedback": _get_seed_ai_feedback(analysis, now),
+            },
+            now,
+        )
         for analysis in analyses
     ]
 
@@ -450,6 +457,133 @@ def _get_demo_interviews(user_id: str, now: str) -> list[dict[str, Any]]:
     ]
 
     return [
-        _with_seed_metadata({**interview, "userId": user_id}, now)
+        _with_seed_metadata(
+            {
+                **interview,
+                "userId": user_id,
+                "aiQuestions": _get_seed_ai_questions(interview["id"]),
+                "aiQuestionsSource": "seeded_demo",
+                "aiQuestionsGeneratedAt": now,
+            },
+            now,
+        )
         for interview in interviews
+    ]
+
+
+def _get_seed_ai_feedback(
+    analysis: dict[str, Any],
+    now: str,
+) -> dict[str, Any]:
+    missing_requirements = analysis.get("missingRequirements") or []
+    match_score = int(analysis.get("matchScore") or 0)
+
+    if match_score >= 80:
+        summary = (
+            "This is a strong fit. The resume already reflects most of the "
+            "role's important requirements."
+        )
+    elif missing_requirements:
+        summary = (
+            "This is a workable fit with a few clear gaps to address before "
+            "applying."
+        )
+    else:
+        summary = (
+            "The match is promising. Add a little more evidence around impact "
+            "and outcomes to make it stronger."
+        )
+
+    tips = [
+        "Add measurable project or workplace outcomes where they match the role.",
+        "Prioritize the most relevant missing requirement in the resume summary.",
+        "Keep examples specific and truthful to the candidate's experience.",
+    ]
+
+    return {
+        "summary": summary,
+        "tips": tips[:3],
+        "generatedAt": now,
+        "source": "seeded_demo",
+    }
+
+
+def _get_seed_ai_questions(session_id: str) -> list[dict[str, str]]:
+    question_sets = {
+        "demo-interview-frontend": [
+            (
+                "technical",
+                "How would you structure a TypeScript React feature for maintainability?",
+            ),
+            (
+                "technical",
+                "How do you validate frontend behavior before releasing?",
+            ),
+            (
+                "technical",
+                "Tell us how you would improve performance in a slow dashboard.",
+            ),
+            (
+                "behavioral",
+                "Describe a time you clarified requirements with a teammate or stakeholder.",
+            ),
+            (
+                "behavioral",
+                "Tell us about a time you improved the quality of an existing UI.",
+            ),
+        ],
+        "demo-interview-backend": [
+            (
+                "technical",
+                "How would you design an authenticated API endpoint safely?",
+            ),
+            (
+                "technical",
+                "How do you approach database-backed service reliability?",
+            ),
+            (
+                "technical",
+                "How would you set up CI/CD for a backend service?",
+            ),
+            (
+                "behavioral",
+                "Tell us about a time you handled a production issue calmly.",
+            ),
+            (
+                "behavioral",
+                "Describe how you communicate tradeoffs during backend work.",
+            ),
+        ],
+        "demo-interview-operations": [
+            (
+                "technical",
+                "How do you organize dishwashing work during a busy shift?",
+            ),
+            (
+                "technical",
+                "How do you keep cleaning work safe and hygienic?",
+            ),
+            (
+                "technical",
+                "What steps help you maintain consistent quality?",
+            ),
+            (
+                "behavioral",
+                "Tell us about a time you stayed reliable under pressure.",
+            ),
+            (
+                "behavioral",
+                "Describe how you support teammates in a busy workplace.",
+            ),
+        ],
+    }
+    prompts = question_sets.get(session_id, question_sets["demo-interview-frontend"])
+
+    return [
+        {
+            "id": f"ai-{category}-{index}",
+            "category": category,
+            "prompt": prompt,
+        }
+        for index, (category, prompt) in enumerate(prompts, start=1)
     ]

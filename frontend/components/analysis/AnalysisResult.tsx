@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import type { Analysis } from "@/types/analysis";
+import { generateAIFeedback } from "@/services/analysis-api";
+import type { AIFeedback, Analysis } from "@/types/analysis";
 import { ImprovementSuggestions } from "./ImprovementSuggestions";
 import { MatchedRequirementsList } from "./MatchedRequirementsList";
 import { MatchScoreCard } from "./MatchScoreCard";
@@ -11,6 +15,28 @@ interface AnalysisResultProps {
 }
 
 export function AnalysisResult({ analysis }: AnalysisResultProps) {
+  const [aiFeedback, setAiFeedback] = useState<AIFeedback | null>(
+    analysis.aiFeedback ?? null,
+  );
+  const [aiFeedbackError, setAiFeedbackError] = useState<string | null>(null);
+  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
+
+  async function handleGenerateAIFeedback() {
+    try {
+      setIsGeneratingFeedback(true);
+      setAiFeedbackError(null);
+      setAiFeedback(await generateAIFeedback(analysis.id));
+    } catch (feedbackError) {
+      setAiFeedbackError(
+        feedbackError instanceof Error
+          ? feedbackError.message
+          : "Unable to generate AI feedback. Please try again.",
+      );
+    } finally {
+      setIsGeneratingFeedback(false);
+    }
+  }
+
   return (
     <section className={styles.result} aria-labelledby="analysis-result-title">
       <div className={styles.header}>
@@ -43,6 +69,46 @@ export function AnalysisResult({ analysis }: AnalysisResultProps) {
       <ImprovementSuggestions
         suggestions={analysis.improvementSuggestions}
       />
+
+      <section className={styles.aiFeedbackPanel}>
+        <div className={styles.aiFeedbackHeader}>
+          <div>
+            <span className={styles.eyebrow}>Optional AI feedback</span>
+            <h3>Short match feedback</h3>
+          </div>
+          <Button
+            disabled={isGeneratingFeedback}
+            onClick={() => void handleGenerateAIFeedback()}
+            variant="secondary"
+          >
+            {isGeneratingFeedback ? "Generating..." : "Generate AI Feedback"}
+          </Button>
+        </div>
+
+        {aiFeedbackError ? (
+          <p className={styles.aiError} role="alert">
+            {aiFeedbackError}
+          </p>
+        ) : null}
+
+        {aiFeedback ? (
+          <div className={styles.aiFeedbackContent}>
+            <p>{aiFeedback.summary}</p>
+            {aiFeedback.tips.length ? (
+              <ul>
+                {aiFeedback.tips.map((tip) => (
+                  <li key={tip}>{tip}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : (
+          <p className={styles.aiHelpText}>
+            Generate a concise AI summary from the saved match score and
+            requirement lists. Full resume text is not sent.
+          </p>
+        )}
+      </section>
     </section>
   );
 }

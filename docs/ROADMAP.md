@@ -260,7 +260,39 @@ Create a recruiter-friendly demo experience.
 
 ---
 
-## Milestone 11 — Testing
+## Milestone 11 — AI Patching & Cost Controls
+
+### Goal
+
+Add a lightweight AI layer for match feedback and interview question generation while keeping the app usable without AI and preventing unexpected API costs.
+
+### Tasks
+
+- [ ] Add backend AI provider service
+- [ ] Configure OpenRouter free model through environment variables
+- [ ] Replace hardcoded model usage with configurable model ID
+- [ ] Reduce max output tokens for small AI tasks
+- [ ] Add AI request schemas using sanitized data only
+- [ ] Do not send full CV text to AI
+- [ ] Add AI usage limit per user
+- [ ] Add global monthly AI call limit
+- [ ] Store generated AI outputs to avoid repeat calls
+- [ ] Add fallback output when AI is disabled
+- [ ] Seed demo AI responses for the demo account
+
+### Success Criteria
+
+- AI can generate match feedback from structured match results
+- AI can generate tailored interview questions
+- App still works when `AI_ENABLED=false`
+- Full resume text is never sent to the AI provider
+- Reopening existing analyses does not trigger new AI calls
+- Demo account does not consume live API credits
+- Usage can stay under 5 euros
+
+---
+
+## Milestone 12 — Testing
 
 ### Goal
 
@@ -284,7 +316,7 @@ Add professional test coverage.
 
 ---
 
-## Milestone 12 — Deployment
+## Milestone 13 — Deployment
 
 ### Goal
 
@@ -308,7 +340,7 @@ Deploy the full application.
 
 ---
 
-## Milestone 13 — Portfolio Polish
+## Milestone 14 — Portfolio Polish
 
 ### Goal
 
@@ -334,10 +366,3 @@ Make the project recruiter-ready.
 - Project can be discussed confidently in interviews
 
 ---
-
-## Current Status
-
-```text
-Current Milestone: Milestone 6 — Resume Management complete
-Next Milestone: Milestone 7 — Job Match Analysis
-```

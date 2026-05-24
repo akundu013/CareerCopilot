@@ -3,14 +3,27 @@ import logging
 from typing import Any, TypeVar
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from pydantic import ValidationError
 
 from app.dependencies import get_current_user
 from app.schemas.analysis import (
+    AIFeedbackResponse,
     AnalysisResponse,
     AnalysisSummaryResponse,
     CreateAnalysisRequest,
 )
 from app.schemas.resume import ResumeStatus
+from app.services.ai_feedback_service import (
+    AIFeedbackFormatError,
+    generate_ai_feedback,
+    generate_fallback_feedback,
+)
+from app.services.ai_provider_service import AIProviderError
+from app.services.ai_usage_service import (
+    AIUsageLimitError,
+    assert_ai_usage_allowed,
+    record_ai_usage,
+)
 from app.services.analysis_repository import AnalysisRepository
 from app.services.demo_guard import (
     DemoModeError,
@@ -74,6 +87,17 @@ def _raise_demo_error(error: DemoModeError) -> None:
         status_code=status.HTTP_403_FORBIDDEN,
         detail=str(error),
     ) from error
+
+
+def _raise_ai_usage_error(error: AIUsageLimitError) -> None:
+    detail = str(error)
+    status_code = (
+        status.HTTP_429_TOO_MANY_REQUESTS
+        if "limit" in detail.lower()
+        else status.HTTP_403_FORBIDDEN
+    )
+
+    raise HTTPException(status_code=status_code, detail=detail) from error
 
 
 @router.post(
@@ -153,6 +177,67 @@ def create_analysis(
     )
 
     return AnalysisResponse(**analysis)
+
+
+@router.post("/{analysis_id}/ai-feedback", response_model=AIFeedbackResponse)
+def generate_analysis_ai_feedback(
+    analysis_id: str,
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> AIFeedbackResponse:
+    user_id = _get_user_id(current_user)
+    analysis = _run_repository_operation(
+        lambda: analysis_repository.get_analysis(user_id, analysis_id),
+    )
+
+    if analysis is None:
+        raise _analysis_not_found()
+
+    saved_feedback = analysis.get("aiFeedback")
+
+    if isinstance(saved_feedback, dict):
+        try:
+            return AIFeedbackResponse(**saved_feedback)
+        except ValidationError:
+            logger.warning(
+                "Ignoring malformed saved AI feedback for analysis %s.",
+                analysis_id,
+            )
+
+    should_record_usage = False
+
+    try:
+        assert_ai_usage_allowed(current_user)
+        feedback = generate_ai_feedback(analysis)
+        should_record_usage = True
+    except AIUsageLimitError as error:
+        _raise_ai_usage_error(error)
+    except (
+        AIProviderError,
+        AIFeedbackFormatError,
+    ):
+        feedback = generate_fallback_feedback(analysis)
+    except Exception:
+        logger.exception("AI feedback generation failed unexpectedly.")
+        feedback = generate_fallback_feedback(analysis)
+
+    updated_analysis = _run_repository_operation(
+        lambda: analysis_repository.update_ai_feedback(
+            user_id,
+            analysis_id,
+            feedback,
+        ),
+    )
+
+    if updated_analysis is None:
+        raise _analysis_not_found()
+
+    if should_record_usage:
+        try:
+            _run_repository_operation(lambda: record_ai_usage(user_id))
+        except HTTPException:
+            logger.exception("AI usage recording failed after feedback generation.")
+
+    return AIFeedbackResponse(**feedback)
 
 
 @router.get("", response_model=list[AnalysisSummaryResponse])

@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Spinner } from "@/components/ui/Spinner";
 import { getAnalyses } from "@/services/analysis-api";
 import {
+  generateAIInterviewQuestions,
   createInterviewSession,
   saveInterviewAnswers,
 } from "@/services/interview-api";
@@ -13,6 +14,7 @@ import type { AnalysisSummary } from "@/types/analysis";
 import type {
   InterviewAnswer,
   InterviewQuestionCategory,
+  InterviewQuestion,
   InterviewSession,
 } from "@/types/interview";
 import { QuestionSection } from "./QuestionSection";
@@ -46,11 +48,16 @@ export function InterviewPage() {
   const [activeSession, setActiveSession] = useState<InterviewSession | null>(
     null,
   );
+  const [aiQuestions, setAiQuestions] = useState<InterviewQuestion[]>([]);
+  const [aiQuestionMessage, setAiQuestionMessage] = useState<string | null>(
+    null,
+  );
   const [answerMap, setAnswerMap] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoadingAnalyses, setIsLoadingAnalyses] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingAIQuestions, setIsGeneratingAIQuestions] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const sortedAnalyses = useMemo(
@@ -110,6 +117,8 @@ export function InterviewPage() {
   function handleAnalysisChange(event: ChangeEvent<HTMLSelectElement>) {
     setSelectedAnalysisId(event.target.value);
     setActiveSession(null);
+    setAiQuestions([]);
+    setAiQuestionMessage(null);
     setAnswerMap({});
     setError(null);
     setSuccessMessage(null);
@@ -129,6 +138,10 @@ export function InterviewPage() {
         analysisId: selectedAnalysisId,
       });
       setActiveSession(session);
+      setAiQuestions(session.aiQuestions ?? []);
+      setAiQuestionMessage(
+        session.aiQuestions?.length ? "Saved AI questions loaded." : null,
+      );
       setAnswerMap(getInitialAnswerMap(session.answers));
       setSuccessMessage("Interview session generated.");
     } catch (generateError) {
@@ -139,6 +152,29 @@ export function InterviewPage() {
       );
     } finally {
       setIsGenerating(false);
+    }
+  }
+
+  async function handleGenerateAIQuestions() {
+    if (!activeSession) {
+      return;
+    }
+
+    try {
+      setIsGeneratingAIQuestions(true);
+      setError(null);
+      setAiQuestionMessage(null);
+      const result = await generateAIInterviewQuestions(activeSession.id);
+      setAiQuestions(result.questions);
+      setAiQuestionMessage(result.message);
+    } catch (generateError) {
+      setError(
+        generateError instanceof Error
+          ? generateError.message
+          : "Unable to generate AI interview questions. Please try again.",
+      );
+    } finally {
+      setIsGeneratingAIQuestions(false);
     }
   }
 
@@ -273,13 +309,52 @@ export function InterviewPage() {
                 {activeSession.resumeFileName}
               </h2>
             </div>
-            <Button
-              disabled={isSaving}
-              onClick={() => void handleSaveAnswers()}
-            >
-              {isSaving ? "Saving..." : "Save answers"}
-            </Button>
+            <div className={styles.headerActions}>
+              <Button
+                disabled={isGeneratingAIQuestions}
+                onClick={() => void handleGenerateAIQuestions()}
+                variant="secondary"
+              >
+                {isGeneratingAIQuestions
+                  ? "Generating..."
+                  : "Generate AI Interview Questions"}
+              </Button>
+              <Button
+                disabled={isSaving}
+                onClick={() => void handleSaveAnswers()}
+              >
+                {isSaving ? "Saving..." : "Save answers"}
+              </Button>
+            </div>
           </div>
+
+          {aiQuestionMessage ? (
+            <p className={styles.success} role="status">
+              {aiQuestionMessage}
+            </p>
+          ) : null}
+
+          {aiQuestions.length ? (
+            <section
+              className={styles.aiQuestionPanel}
+              aria-labelledby="ai-interview-questions-title"
+            >
+              <div>
+                <span className={styles.eyebrow}>Optional AI questions</span>
+                <h3 id="ai-interview-questions-title">
+                  Tailored practice prompts
+                </h3>
+              </div>
+              <div className={styles.aiQuestionList}>
+                {aiQuestions.map((question) => (
+                  <article key={question.id}>
+                    <span>{question.category}</span>
+                    <p>{question.prompt}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <div className={styles.sections}>
             {QUESTION_CATEGORY_ORDER.map((category) => (

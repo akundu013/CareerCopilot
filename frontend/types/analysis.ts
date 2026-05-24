@@ -1,5 +1,12 @@
 export type MatchScore = number;
 
+export interface AIFeedback {
+  summary: string;
+  tips: string[];
+  generatedAt: string;
+  source: string;
+}
+
 export interface Analysis {
   id: string;
   userId: string;
@@ -11,6 +18,7 @@ export interface Analysis {
   matchedRequirements: string[];
   missingRequirements: string[];
   improvementSuggestions: string[];
+  aiFeedback?: AIFeedback | null;
   isSeededDemoData?: boolean;
   createdByDemoSeed?: boolean;
   isDemoCreated?: boolean;

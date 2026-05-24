@@ -7,9 +7,16 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from app.dependencies import get_current_user
 from app.schemas.interview import (
     CreateInterviewSessionRequest,
+    InterviewAIQuestionsResponse,
     InterviewAnswer,
     InterviewSessionResponse,
     UpdateInterviewAnswersRequest,
+)
+from app.services.ai_provider_service import AIProviderError
+from app.services.ai_usage_service import (
+    AIUsageLimitError,
+    assert_ai_usage_allowed,
+    record_ai_usage,
 )
 from app.services.analysis_repository import AnalysisRepository
 from app.services.demo_guard import (
@@ -18,8 +25,14 @@ from app.services.demo_guard import (
     assert_demo_can_delete_record,
     assert_demo_can_update_record,
     is_demo_user,
+    is_seeded_demo_record,
 )
 from app.services.interview_generator import generate_interview_questions
+from app.services.interview_ai_service import (
+    AIInterviewQuestionFormatError,
+    generate_ai_interview_questions,
+    generate_fallback_interview_questions,
+)
 from app.services.interview_repository import InterviewRepository
 
 router = APIRouter(prefix="/api/interviews", tags=["interviews"])
@@ -75,6 +88,17 @@ def _raise_demo_error(error: DemoModeError) -> None:
     ) from error
 
 
+def _raise_ai_usage_error(error: AIUsageLimitError) -> None:
+    detail = str(error)
+    status_code = (
+        status.HTTP_429_TOO_MANY_REQUESTS
+        if "limit" in detail.lower()
+        else status.HTTP_403_FORBIDDEN
+    )
+
+    raise HTTPException(status_code=status_code, detail=detail) from error
+
+
 @router.post(
     "",
     response_model=InterviewSessionResponse,
@@ -125,6 +149,81 @@ def create_interview_session(
     )
 
     return InterviewSessionResponse(**session)
+
+
+@router.post(
+    "/{session_id}/ai-questions",
+    response_model=InterviewAIQuestionsResponse,
+)
+def generate_session_ai_questions(
+    session_id: str,
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> InterviewAIQuestionsResponse:
+    user_id = _get_user_id(current_user)
+    session = _run_repository_operation(
+        lambda: interview_repository.get_session(user_id, session_id),
+    )
+
+    if session is None:
+        raise _session_not_found()
+
+    saved_questions = session.get("aiQuestions")
+
+    if isinstance(saved_questions, list) and saved_questions:
+        return InterviewAIQuestionsResponse(
+            questions=saved_questions,
+            source=session.get("aiQuestionsSource") or "saved",
+            generatedAt=session.get("aiQuestionsGeneratedAt")
+            or session.get("updatedAt"),
+            message="Saved AI interview questions loaded.",
+        )
+
+    analysis = _run_repository_operation(
+        lambda: analysis_repository.get_analysis(user_id, session["analysisId"]),
+    )
+
+    if analysis is None:
+        raise _analysis_not_found()
+
+    should_record_usage = False
+
+    try:
+        assert_ai_usage_allowed(current_user)
+        ai_question_result = generate_ai_interview_questions(analysis)
+        should_record_usage = True
+    except AIUsageLimitError as error:
+        if "limit" in str(error).lower():
+            _raise_ai_usage_error(error)
+
+        ai_question_result = generate_fallback_interview_questions(analysis)
+    except (
+        AIProviderError,
+        AIInterviewQuestionFormatError,
+    ):
+        ai_question_result = generate_fallback_interview_questions(analysis)
+
+    should_store_questions = not (
+        is_demo_user(current_user) and is_seeded_demo_record(session)
+    )
+
+    if should_store_questions:
+        updated_session = _run_repository_operation(
+            lambda: interview_repository.update_ai_questions(
+                user_id,
+                session_id,
+                ai_question_result["questions"],
+                ai_question_result["source"],
+                ai_question_result["generatedAt"],
+            ),
+        )
+
+        if updated_session is None:
+            raise _session_not_found()
+
+    if should_record_usage:
+        _run_repository_operation(lambda: record_ai_usage(user_id))
+
+    return InterviewAIQuestionsResponse(**ai_question_result)
 
 
 @router.get("", response_model=list[InterviewSessionResponse])

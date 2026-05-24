@@ -19,6 +19,9 @@ export interface InterviewSession {
   resumeFileName: string;
   questions: InterviewQuestion[];
   answers: InterviewAnswer[];
+  aiQuestions?: InterviewQuestion[] | null;
+  aiQuestionsSource?: string | null;
+  aiQuestionsGeneratedAt?: string | null;
   isSeededDemoData?: boolean;
   createdByDemoSeed?: boolean;
   isDemoCreated?: boolean;
@@ -32,4 +35,11 @@ export interface CreateInterviewSessionInput {
 
 export interface SaveInterviewAnswersInput {
   answers: InterviewAnswer[];
+}
+
+export interface AIInterviewQuestions {
+  questions: InterviewQuestion[];
+  source: string;
+  generatedAt: string;
+  message: string;
 }

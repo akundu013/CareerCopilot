@@ -1,5 +1,6 @@
 import { apiRequest } from "@/services/api-client";
 import type {
+  AIFeedback,
   Analysis,
   AnalysisSummary,
   CreateAnalysisInput,
@@ -42,5 +43,11 @@ export function getAnalysis(id: string): Promise<Analysis> {
 export function deleteAnalysis(id: string): Promise<void> {
   return apiRequest<void>(analysisPath(id), {
     method: "DELETE",
+  });
+}
+
+export function generateAIFeedback(id: string): Promise<AIFeedback> {
+  return apiRequest<AIFeedback>(`${analysisPath(id)}/ai-feedback`, {
+    method: "POST",
   });
 }

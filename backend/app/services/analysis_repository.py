@@ -58,6 +58,26 @@ class AnalysisRepository:
 
         return {"id": document.id, **data}
 
+    def update_ai_feedback(
+        self,
+        user_id: str,
+        analysis_id: str,
+        feedback: dict[str, Any],
+    ) -> dict[str, Any] | None:
+        document = self.get_document(user_id, analysis_id)
+
+        if not document.get().exists:
+            return None
+
+        document.update(
+            {
+                "aiFeedback": feedback,
+                "updatedAt": _utc_now(),
+            },
+        )
+
+        return self.get_analysis(user_id, analysis_id)
+
     def delete_analysis(self, user_id: str, analysis_id: str) -> bool:
         document = self.get_document(user_id, analysis_id)
 

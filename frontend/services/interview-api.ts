@@ -1,5 +1,6 @@
 import { apiRequest } from "@/services/api-client";
 import type {
+  AIInterviewQuestions,
   CreateInterviewSessionInput,
   InterviewSession,
   SaveInterviewAnswersInput,
@@ -54,5 +55,13 @@ export function saveInterviewAnswers(
 export function deleteInterviewSession(id: string): Promise<void> {
   return apiRequest<void>(interviewPath(id), {
     method: "DELETE",
+  });
+}
+
+export function generateAIInterviewQuestions(
+  id: string,
+): Promise<AIInterviewQuestions> {
+  return apiRequest<AIInterviewQuestions>(`${interviewPath(id)}/ai-questions`, {
+    method: "POST",
   });
 }

@@ -107,6 +107,50 @@
   gap: var(--space-6);
 }
 
+.aiQuestionPanel {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 34%, transparent);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+}
+
+.aiQuestionPanel h3 {
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.aiQuestionList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.aiQuestionList article {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.aiQuestionList span {
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.aiQuestionList p {
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.55;
+}
+
 .statePanel,
 .emptyWrap {
   display: grid;
@@ -152,5 +196,9 @@
   .header > a,
   .header > button {
     flex: 1 1 auto;
+  }
+
+  .aiQuestionList {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,6 +1,13 @@
 from pydantic import BaseModel, Field
 
 
+class AIFeedbackResponse(BaseModel):
+    summary: str
+    tips: list[str]
+    generatedAt: str
+    source: str
+
+
 class CreateAnalysisRequest(BaseModel):
     resumeId: str = Field(min_length=1)
     jobDescription: str = Field(min_length=1)
@@ -17,6 +24,7 @@ class AnalysisResponse(BaseModel):
     matchedRequirements: list[str]
     missingRequirements: list[str]
     improvementSuggestions: list[str]
+    aiFeedback: AIFeedbackResponse | None = None
     isSeededDemoData: bool | None = None
     createdByDemoSeed: bool | None = None
     isDemoCreated: bool | None = None

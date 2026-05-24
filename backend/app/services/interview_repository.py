@@ -86,6 +86,30 @@ class InterviewRepository:
 
         return self.get_session(user_id, session_id)
 
+    def update_ai_questions(
+        self,
+        user_id: str,
+        session_id: str,
+        questions: list[dict[str, Any]],
+        source: str,
+        generated_at: str,
+    ) -> dict[str, Any] | None:
+        document = self.get_document(user_id, session_id)
+
+        if not document.get().exists:
+            return None
+
+        document.update(
+            {
+                "aiQuestions": questions,
+                "aiQuestionsSource": source,
+                "aiQuestionsGeneratedAt": generated_at,
+                "updatedAt": _utc_now(),
+            },
+        )
+
+        return self.get_session(user_id, session_id)
+
     def delete_session(self, user_id: str, session_id: str) -> bool:
         document = self.get_document(user_id, session_id)
 

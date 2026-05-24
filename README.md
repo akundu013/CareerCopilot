@@ -52,11 +52,13 @@ This project is being built to showcase:
 - Resume-to-job matching
 - Missing skill detection
 - Resume improvement suggestions
+- Optional AI match feedback from sanitized match results
 
 ### Interview Preparation
 
 - Interview question generation
 - Saved practice sessions
+- Optional AI interview questions from structured role and skill data
 
 ### Analytics Dashboard
 
@@ -91,6 +93,7 @@ This project is being built to showcase:
 - Firebase Auth
 - Firestore
 - Firebase Storage
+- OpenRouter for optional backend-only AI actions
 
 ### Deployment
 
@@ -211,6 +214,27 @@ Swagger:
 ```text
 http://localhost:8000/docs
 ```
+
+### Optional AI Setup
+
+AI features are controlled only by backend environment variables. The frontend
+never receives the OpenRouter API key and users cannot choose the provider or
+model.
+
+```env
+AI_ENABLED=false
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=
+OPENROUTER_MODEL=openrouter/free
+AI_MAX_OUTPUT_TOKENS=400
+AI_DAILY_CALL_LIMIT_PER_USER=3
+AI_MONTHLY_CALL_LIMIT_GLOBAL=50
+AI_DEMO_MODE_LIVE_AI=false
+```
+
+When `AI_ENABLED=false`, the app still works normally. Match scoring remains
+deterministic, interview prep falls back to the local question bank, and demo
+mode uses saved seeded output instead of live AI calls.
 
 ---
 
