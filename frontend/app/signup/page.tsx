@@ -6,10 +6,12 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
+import { isSignupEnabled } from "@/services/feature-flags";
 import styles from "./page.module.scss";
 
 export default function SignupPage() {
   const router = useRouter();
+  const signupEnabled = isSignupEnabled();
   const { isAuthenticated, loading, signup } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,10 +20,26 @@ export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!signupEnabled) {
+      router.replace("/login");
+      return;
+    }
+
     if (!loading && isAuthenticated) {
       router.replace("/dashboard");
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, router, signupEnabled]);
+
+  if (!signupEnabled) {
+    return (
+      <main className={styles.statePage}>
+        <section className={styles.stateCard} aria-live="polite">
+          <h1>Sign up disabled</h1>
+          <p>New account registration is currently unavailable.</p>
+        </section>
+      </main>
+    );
+  }
 
   if (loading || isAuthenticated) {
     return (

@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { isSignupEnabled } from "@/services/feature-flags";
 import styles from "./page.module.scss";
 
 const features = [
@@ -29,6 +30,8 @@ const features = [
 const stackItems = ["Next.js", "React", "FastAPI", "Firebase"];
 
 export default function Home() {
+  const signupEnabled = isSignupEnabled();
+
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
@@ -42,9 +45,11 @@ export default function Home() {
           </p>
           <div className={styles.actions}>
             <Button href="/login">Sign in</Button>
-            <Button href="/signup" variant="secondary">
-              Create account
-            </Button>
+            {signupEnabled ? (
+              <Button href="/signup" variant="secondary">
+                Create account
+              </Button>
+            ) : null}
             <Button href="#features" variant="ghost">
               Explore features
             </Button>

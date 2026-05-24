@@ -7,10 +7,12 @@ import { DemoLoginButton } from "@/components/auth/DemoLoginButton";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
+import { isSignupEnabled } from "@/services/feature-flags";
 import styles from "./page.module.scss";
 
 export default function LoginPage() {
   const router = useRouter();
+  const signupEnabled = isSignupEnabled();
   const { isAuthenticated, loading, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -131,9 +133,11 @@ export default function LoginPage() {
             onLoadingChange={setIsSubmitting}
           />
 
-          <p className={styles.footerText}>
-            New to Career Copilot? <Link href="/signup">Create an account</Link>
-          </p>
+          {signupEnabled ? (
+            <p className={styles.footerText}>
+              New to Career Copilot? <Link href="/signup">Create an account</Link>
+            </p>
+          ) : null}
         </div>
       </section>
     </main>
