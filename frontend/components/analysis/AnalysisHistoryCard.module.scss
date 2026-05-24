@@ -109,6 +109,19 @@
   justify-content: flex-end;
 }
 
+.protectedLabel {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
 @media (max-width: 620px) {
   .header {
     align-items: stretch;

@@ -2,14 +2,17 @@ from typing import Any
 
 from app.config.demo import (
     DEMO_ANALYSES_PER_CUSTOM_RESUME_LIMIT,
+    DEMO_CUSTOM_INTERVIEW_SESSION_LIMIT,
     DEMO_CUSTOM_RESUME_LIMIT,
     get_demo_user_email,
 )
 from app.services.analysis_repository import AnalysisRepository
+from app.services.interview_repository import InterviewRepository
 from app.services.resume_repository import ResumeRepository
 
 resume_repository = ResumeRepository()
 analysis_repository = AnalysisRepository()
+interview_repository = InterviewRepository()
 
 
 class DemoModeError(ValueError):
@@ -60,6 +63,23 @@ def assert_demo_can_create_analysis(user_id: str, resume_id: str) -> None:
         raise DemoModeError(
             "Demo mode allows up to 5 analyses per custom resume."
         )
+
+
+def assert_demo_can_create_interview_session(user_id: str) -> None:
+    sessions = interview_repository.list_sessions(user_id)
+    custom_session_count = sum(
+        1
+        for session in sessions
+        if _is_demo_created_record(session)
+    )
+
+    if custom_session_count >= DEMO_CUSTOM_INTERVIEW_SESSION_LIMIT:
+        raise DemoModeError("Demo mode allows limited interview practice.")
+
+
+def assert_demo_can_update_record(record: dict[str, Any] | None) -> None:
+    if is_seeded_demo_record(record):
+        raise DemoModeError("Demo mode protects seeded data from changes.")
 
 
 def assert_demo_can_delete_record(record: dict[str, Any] | None) -> None:

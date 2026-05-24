@@ -18,6 +18,13 @@ from app.services.resume_parser import (
 )
 from app.services.resume_repository import ResumeRepository
 from app.services.firebase_storage_service import delete_resume_file
+from app.services.demo_guard import (
+    DemoModeError,
+    assert_demo_can_create_resume,
+    assert_demo_can_delete_record,
+    assert_demo_can_update_record,
+    is_demo_user,
+)
 
 router = APIRouter(prefix="/api/resumes", tags=["resumes"])
 resume_repository = ResumeRepository()
@@ -68,6 +75,13 @@ def _run_storage_operation(operation: Callable[[], None]) -> None:
         ) from exc
 
 
+def _raise_demo_error(error: DemoModeError) -> None:
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=str(error),
+    ) from error
+
+
 @router.post(
     "",
     response_model=ResumeResponse,
@@ -78,10 +92,20 @@ def create_resume(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> ResumeResponse:
     user_id = _get_user_id(current_user)
+    resume_data = payload.model_dump(mode="json", exclude_none=True)
+
+    if is_demo_user(current_user):
+        try:
+            assert_demo_can_create_resume(user_id)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
+        resume_data["isDemoCreated"] = True
+
     resume = _run_repository_operation(
         lambda: resume_repository.create(
             user_id,
-            payload.model_dump(mode="json", exclude_none=True),
+            resume_data,
         ),
     )
 
@@ -150,6 +174,12 @@ def parse_resume(
     if resume is None:
         raise _not_found()
 
+    if is_demo_user(current_user):
+        try:
+            assert_demo_can_update_record(resume)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     try:
         file_bytes = download_resume_file(resume["fileUrl"])
         parsed_text = parse_resume_file(file_bytes, resume["contentType"])
@@ -184,6 +214,20 @@ def update_resume(
         )
 
     user_id = _get_user_id(current_user)
+
+    if is_demo_user(current_user):
+        existing_resume = _run_repository_operation(
+            lambda: resume_repository.get(user_id, resume_id),
+        )
+
+        if existing_resume is None:
+            raise _not_found()
+
+        try:
+            assert_demo_can_update_record(existing_resume)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     resume = _run_repository_operation(
         lambda: resume_repository.update(user_id, resume_id, update_data),
     )
@@ -206,6 +250,12 @@ def delete_resume(
 
     if resume is None:
         raise _not_found()
+
+    if is_demo_user(current_user):
+        try:
+            assert_demo_can_delete_record(resume)
+        except DemoModeError as error:
+            _raise_demo_error(error)
 
     _run_storage_operation(
         lambda: delete_resume_file(user_id, resume["storagePath"]),

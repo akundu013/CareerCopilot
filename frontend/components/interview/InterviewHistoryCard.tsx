@@ -43,6 +43,10 @@ function getAnswerForQuestion(
   );
 }
 
+function isSeededDemoSession(session: InterviewSession): boolean {
+  return Boolean(session.isSeededDemoData || session.createdByDemoSeed);
+}
+
 export function InterviewHistoryCard({
   isDeleteDisabled = false,
   isDeleting = false,
@@ -51,6 +55,8 @@ export function InterviewHistoryCard({
   onToggleOpen,
   session,
 }: InterviewHistoryCardProps) {
+  const isProtectedDemoRecord = isSeededDemoSession(session);
+
   return (
     <article className={styles.card}>
       <div className={styles.header}>
@@ -97,10 +103,13 @@ export function InterviewHistoryCard({
           {isOpen ? "Close session" : "Open session"}
         </button>
         <DeleteInterviewButton
-          disabled={isDeleteDisabled}
+          disabled={isProtectedDemoRecord || isDeleteDisabled}
           isDeleting={isDeleting}
           onClick={onDelete}
         />
+        {isProtectedDemoRecord ? (
+          <span className={styles.protectedLabel}>Protected demo data</span>
+        ) : null}
       </div>
     </article>
   );

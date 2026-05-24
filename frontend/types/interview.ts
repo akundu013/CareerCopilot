@@ -19,6 +19,9 @@ export interface InterviewSession {
   resumeFileName: string;
   questions: InterviewQuestion[];
   answers: InterviewAnswer[];
+  isSeededDemoData?: boolean;
+  createdByDemoSeed?: boolean;
+  isDemoCreated?: boolean;
   createdAt: string;
   updatedAt: string;
 }

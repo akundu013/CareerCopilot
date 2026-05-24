@@ -11,6 +11,9 @@ export interface Analysis {
   matchedRequirements: string[];
   missingRequirements: string[];
   improvementSuggestions: string[];
+  isSeededDemoData?: boolean;
+  createdByDemoSeed?: boolean;
+  isDemoCreated?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,6 +30,9 @@ export interface AnalysisSummary {
   matchScore: MatchScore;
   matchedRequirements: string[];
   missingRequirements: string[];
+  isSeededDemoData?: boolean;
+  createdByDemoSeed?: boolean;
+  isDemoCreated?: boolean;
   createdAt: string;
   updatedAt: string;
 }

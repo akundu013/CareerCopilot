@@ -17,6 +17,9 @@ class AnalysisResponse(BaseModel):
     matchedRequirements: list[str]
     missingRequirements: list[str]
     improvementSuggestions: list[str]
+    isSeededDemoData: bool | None = None
+    createdByDemoSeed: bool | None = None
+    isDemoCreated: bool | None = None
     createdAt: str
     updatedAt: str
 
@@ -28,5 +31,8 @@ class AnalysisSummaryResponse(BaseModel):
     matchScore: float = Field(ge=0, le=100)
     matchedRequirements: list[str]
     missingRequirements: list[str]
+    isSeededDemoData: bool | None = None
+    createdByDemoSeed: bool | None = None
+    isDemoCreated: bool | None = None
     createdAt: str
     updatedAt: str

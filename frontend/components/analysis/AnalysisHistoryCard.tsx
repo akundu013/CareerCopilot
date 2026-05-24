@@ -23,12 +23,18 @@ function formatDate(value: string): string {
   });
 }
 
+function isSeededDemoAnalysis(analysis: AnalysisSummary): boolean {
+  return Boolean(analysis.isSeededDemoData || analysis.createdByDemoSeed);
+}
+
 export function AnalysisHistoryCard({
   analysis,
   isDeleteDisabled = false,
   isDeleting = false,
   onDelete,
 }: AnalysisHistoryCardProps) {
+  const isProtectedDemoRecord = isSeededDemoAnalysis(analysis);
+
   return (
     <article className={styles.card}>
       <div className={styles.header}>
@@ -72,11 +78,15 @@ export function AnalysisHistoryCard({
       </div>
 
       <div className={styles.actions}>
-        <DeleteAnalysisButton
-          disabled={isDeleteDisabled}
-          isDeleting={isDeleting}
-          onClick={onDelete}
-        />
+        {isProtectedDemoRecord ? (
+          <span className={styles.protectedLabel}>Protected demo data</span>
+        ) : (
+          <DeleteAnalysisButton
+            disabled={isDeleteDisabled}
+            isDeleting={isDeleting}
+            onClick={onDelete}
+          />
+        )}
       </div>
     </article>
   );

@@ -36,5 +36,8 @@ class InterviewSessionResponse(BaseModel):
     resumeFileName: str
     questions: list[InterviewQuestion]
     answers: list[InterviewAnswer]
+    isSeededDemoData: bool | None = None
+    createdByDemoSeed: bool | None = None
+    isDemoCreated: bool | None = None
     createdAt: str
     updatedAt: str

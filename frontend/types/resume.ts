@@ -16,6 +16,9 @@ export interface ResumeDocument {
   sizeBytes: number;
   status: ResumeStatus;
   parsedText?: string;
+  isSeededDemoData?: boolean;
+  createdByDemoSeed?: boolean;
+  isDemoCreated?: boolean;
   createdAt: string;
   updatedAt: string;
 }

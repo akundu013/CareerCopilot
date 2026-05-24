@@ -44,5 +44,8 @@ class ApplicationResponse(BaseModel):
     salaryRange: str | None = None
     notes: str | None = None
     dateApplied: str | None = None
+    isSeededDemoData: bool | None = None
+    createdByDemoSeed: bool | None = None
+    isDemoCreated: bool | None = None
     createdAt: str
     updatedAt: str

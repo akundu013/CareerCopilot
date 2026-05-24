@@ -48,6 +48,10 @@ function getParseStatusText(resume: ResumeDocument): string {
   return "Waiting for parsing.";
 }
 
+function isSeededDemoResume(resume: ResumeDocument): boolean {
+  return Boolean(resume.isSeededDemoData || resume.createdByDemoSeed);
+}
+
 export function ResumeCard({
   isDeleteDisabled = false,
   isDeleting = false,
@@ -58,6 +62,7 @@ export function ResumeCard({
   resume,
 }: ResumeCardProps) {
   const isParsed = resume.status === "parsed";
+  const isProtectedDemoRecord = isSeededDemoResume(resume);
 
   return (
     <article className={styles.card}>
@@ -99,18 +104,22 @@ export function ResumeCard({
         </a>
         <Button
           className={styles.parseButton}
-          disabled={isParsing || isParseDisabled || isDeleting}
+          disabled={
+            isProtectedDemoRecord || isParsing || isParseDisabled || isDeleting
+          }
           onClick={onParse}
           variant={isParsed ? "secondary" : "primary"}
         >
-          {isParsing
-            ? "Parsing..."
-            : isParsed
-              ? "Parse again"
-              : "Parse resume"}
+          {isProtectedDemoRecord
+            ? "Seeded demo"
+            : isParsing
+              ? "Parsing..."
+              : isParsed
+                ? "Parse again"
+                : "Parse resume"}
         </Button>
         <DeleteResumeButton
-          disabled={isDeleteDisabled || isParsing}
+          disabled={isProtectedDemoRecord || isDeleteDisabled || isParsing}
           isDeleting={isDeleting}
           onDelete={onDelete}
         />

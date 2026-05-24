@@ -12,6 +12,13 @@ from app.schemas.interview import (
     UpdateInterviewAnswersRequest,
 )
 from app.services.analysis_repository import AnalysisRepository
+from app.services.demo_guard import (
+    DemoModeError,
+    assert_demo_can_create_interview_session,
+    assert_demo_can_delete_record,
+    assert_demo_can_update_record,
+    is_demo_user,
+)
 from app.services.interview_generator import generate_interview_questions
 from app.services.interview_repository import InterviewRepository
 
@@ -61,6 +68,13 @@ def _run_repository_operation(
         ) from exc
 
 
+def _raise_demo_error(error: DemoModeError) -> None:
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=str(error),
+    ) from error
+
+
 @router.post(
     "",
     response_model=InterviewSessionResponse,
@@ -77,6 +91,12 @@ def create_interview_session(
 
     if analysis is None:
         raise _analysis_not_found()
+
+    if is_demo_user(current_user):
+        try:
+            assert_demo_can_create_interview_session(user_id)
+        except DemoModeError as error:
+            _raise_demo_error(error)
 
     questions = generate_interview_questions(
         analysis.get("jobDescription") or "",
@@ -99,6 +119,7 @@ def create_interview_session(
                 "resumeFileName": analysis["resumeFileName"],
                 "questions": questions,
                 "answers": answers,
+                **({"isDemoCreated": True} if is_demo_user(current_user) else {}),
             },
         ),
     )
@@ -151,6 +172,12 @@ def update_interview_answers(
     if session is None:
         raise _session_not_found()
 
+    if is_demo_user(current_user):
+        try:
+            assert_demo_can_update_record(session)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     answers = _validate_answers(payload.answers, session)
     updated_session = _run_repository_operation(
         lambda: interview_repository.update_answers(
@@ -172,6 +199,20 @@ def delete_interview_session(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> Response:
     user_id = _get_user_id(current_user)
+
+    if is_demo_user(current_user):
+        session = _run_repository_operation(
+            lambda: interview_repository.get_session(user_id, session_id),
+        )
+
+        if session is None:
+            raise _session_not_found()
+
+        try:
+            assert_demo_can_delete_record(session)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     deleted = _run_repository_operation(
         lambda: interview_repository.delete_session(user_id, session_id),
     )

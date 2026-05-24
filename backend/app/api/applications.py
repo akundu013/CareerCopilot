@@ -11,6 +11,12 @@ from app.schemas.application import (
     UpdateApplicationRequest,
 )
 from app.services.application_repository import ApplicationRepository
+from app.services.demo_guard import (
+    DemoModeError,
+    assert_demo_can_delete_record,
+    assert_demo_can_update_record,
+    is_demo_user,
+)
 
 router = APIRouter(prefix="/api/applications", tags=["applications"])
 application_repository = ApplicationRepository()
@@ -50,6 +56,13 @@ def _run_repository_operation(
         ) from exc
 
 
+def _raise_demo_error(error: DemoModeError) -> None:
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=str(error),
+    ) from error
+
+
 @router.post(
     "",
     response_model=ApplicationResponse,
@@ -60,10 +73,15 @@ def create_application(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> ApplicationResponse:
     user_id = _get_user_id(current_user)
+    application_data = payload.model_dump(mode="json", exclude_none=True)
+
+    if is_demo_user(current_user):
+        application_data["isDemoCreated"] = True
+
     application = _run_repository_operation(
         lambda: application_repository.create(
             user_id,
-            payload.model_dump(mode="json", exclude_none=True),
+            application_data,
         ),
     )
 
@@ -113,6 +131,20 @@ def update_application(
         )
 
     user_id = _get_user_id(current_user)
+
+    if is_demo_user(current_user):
+        existing_application = _run_repository_operation(
+            lambda: application_repository.get(user_id, application_id),
+        )
+
+        if existing_application is None:
+            raise _not_found()
+
+        try:
+            assert_demo_can_update_record(existing_application)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     application = _run_repository_operation(
         lambda: application_repository.update(
             user_id,
@@ -133,6 +165,20 @@ def delete_application(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> Response:
     user_id = _get_user_id(current_user)
+
+    if is_demo_user(current_user):
+        application = _run_repository_operation(
+            lambda: application_repository.get(user_id, application_id),
+        )
+
+        if application is None:
+            raise _not_found()
+
+        try:
+            assert_demo_can_delete_record(application)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     deleted = _run_repository_operation(
         lambda: application_repository.delete(user_id, application_id),
     )

@@ -19,6 +19,9 @@ export interface JobApplication {
   salaryRange?: string;
   notes?: string;
   dateApplied?: string;
+  isSeededDemoData?: boolean;
+  createdByDemoSeed?: boolean;
+  isDemoCreated?: boolean;
   createdAt: string;
   updatedAt: string;
 }

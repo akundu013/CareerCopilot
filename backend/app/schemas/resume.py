@@ -38,5 +38,8 @@ class ResumeResponse(BaseModel):
     sizeBytes: int
     status: ResumeStatus
     parsedText: str | None = None
+    isSeededDemoData: bool | None = None
+    createdByDemoSeed: bool | None = None
+    isDemoCreated: bool | None = None
     createdAt: str
     updatedAt: str

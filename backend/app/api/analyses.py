@@ -12,6 +12,12 @@ from app.schemas.analysis import (
 )
 from app.schemas.resume import ResumeStatus
 from app.services.analysis_repository import AnalysisRepository
+from app.services.demo_guard import (
+    DemoModeError,
+    assert_demo_can_create_analysis,
+    assert_demo_can_delete_record,
+    is_demo_user,
+)
 from app.services.improvement_service import generate_suggestions
 from app.services.match_engine import analyze_match
 from app.services.requirement_extractor import extract_requirements
@@ -63,6 +69,13 @@ def _run_repository_operation(
         ) from exc
 
 
+def _raise_demo_error(error: DemoModeError) -> None:
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=str(error),
+    ) from error
+
+
 @router.post(
     "",
     response_model=AnalysisResponse,
@@ -102,6 +115,12 @@ def create_analysis(
             detail="Selected resume does not have parsed text.",
         )
 
+    if is_demo_user(current_user):
+        try:
+            assert_demo_can_create_analysis(user_id, payload.resumeId)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     extracted_requirements = extract_requirements(job_description)
 
     if not extracted_requirements:
@@ -128,6 +147,7 @@ def create_analysis(
                 "matchedRequirements": match_result["matchedRequirements"],
                 "missingRequirements": match_result["missingRequirements"],
                 "improvementSuggestions": improvement_suggestions,
+                **({"isDemoCreated": True} if is_demo_user(current_user) else {}),
             },
         ),
     )
@@ -169,6 +189,20 @@ def delete_analysis(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> Response:
     user_id = _get_user_id(current_user)
+
+    if is_demo_user(current_user):
+        analysis = _run_repository_operation(
+            lambda: analysis_repository.get_analysis(user_id, analysis_id),
+        )
+
+        if analysis is None:
+            raise _analysis_not_found()
+
+        try:
+            assert_demo_can_delete_record(analysis)
+        except DemoModeError as error:
+            _raise_demo_error(error)
+
     deleted = _run_repository_operation(
         lambda: analysis_repository.delete_analysis(user_id, analysis_id),
     )
